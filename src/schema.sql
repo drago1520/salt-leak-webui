@@ -1,4 +1,3 @@
--- Active: 1775517140698@@188.245.124.222@54332@postgres
 create table if not exists sensor_readings (
   id bigint primary key,
   received_at timestamp not null default timezone('utc', now()),

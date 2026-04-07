@@ -3,6 +3,10 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "listen": "bun src/index.ts",
+    "send": "bun src/scripts/send-tcp.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
