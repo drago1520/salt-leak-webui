@@ -1,0 +1,388 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.sensor_readings": {
+      "name": "sensor_readings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "received_at": {
+          "name": "received_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "timezone('utc'::text, now())"
+        },
+        "raw_line": {
+          "name": "raw_line",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p1_ohms": {
+          "name": "p1_ohms",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p2_ohms": {
+          "name": "p2_ohms",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p3_ohms": {
+          "name": "p3_ohms",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p4_ohms": {
+          "name": "p4_ohms",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p5_ohms": {
+          "name": "p5_ohms",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p6_ohms": {
+          "name": "p6_ohms",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p1_status_code": {
+          "name": "p1_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p2_status_code": {
+          "name": "p2_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p3_status_code": {
+          "name": "p3_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p4_status_code": {
+          "name": "p4_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p5_status_code": {
+          "name": "p5_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p6_status_code": {
+          "name": "p6_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boost_voltage_v": {
+          "name": "boost_voltage_v",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "box_status_code": {
+          "name": "box_status_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datacenter_id": {
+          "name": "datacenter_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "machine_id": {
+          "name": "machine_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "sensor_readings_box_status_alert_idx": {
+          "name": "sensor_readings_box_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(box_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_p1_low_ohms_idx": {
+          "name": "sensor_readings_p1_low_ohms_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p1_ohms < (10)::double precision)",
+          "with": {}
+        },
+        "sensor_readings_p1_status_alert_idx": {
+          "name": "sensor_readings_p1_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p1_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_p2_low_ohms_idx": {
+          "name": "sensor_readings_p2_low_ohms_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p2_ohms < (10)::double precision)",
+          "with": {}
+        },
+        "sensor_readings_p2_status_alert_idx": {
+          "name": "sensor_readings_p2_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p2_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_p3_low_ohms_idx": {
+          "name": "sensor_readings_p3_low_ohms_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p3_ohms < (10)::double precision)",
+          "with": {}
+        },
+        "sensor_readings_p3_status_alert_idx": {
+          "name": "sensor_readings_p3_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p3_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_p4_low_ohms_idx": {
+          "name": "sensor_readings_p4_low_ohms_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p4_ohms < (10)::double precision)",
+          "with": {}
+        },
+        "sensor_readings_p4_status_alert_idx": {
+          "name": "sensor_readings_p4_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p4_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_p5_low_ohms_idx": {
+          "name": "sensor_readings_p5_low_ohms_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p5_ohms < (10)::double precision)",
+          "with": {}
+        },
+        "sensor_readings_p5_status_alert_idx": {
+          "name": "sensor_readings_p5_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p5_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_p6_low_ohms_idx": {
+          "name": "sensor_readings_p6_low_ohms_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p6_ohms < (10)::double precision)",
+          "with": {}
+        },
+        "sensor_readings_p6_status_alert_idx": {
+          "name": "sensor_readings_p6_status_alert_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "where": "(p6_status_code <> 0)",
+          "with": {}
+        },
+        "sensor_readings_received_at_idx": {
+          "name": "sensor_readings_received_at_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "asc": false,
+              "nulls": "first",
+              "opclass": "timestamp_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {}
+  }
+}
