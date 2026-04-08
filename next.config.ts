@@ -4,12 +4,12 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   experimental: {
-    turbopackFileSystemCacheForDev: true,
     turbopackFileSystemCacheForBuild: true,
   },
   turbopack: {
     root: process.cwd(),
   },
+  serverExternalPackages: ['pg'],
 };
 
 export default nextConfig;

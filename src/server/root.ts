@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createTRPCRouter, publicProcedure } from '@/server/trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/trpc';
 
 const hello = publicProcedure
   .input(
@@ -15,6 +15,13 @@ const hello = publicProcedure
     };
   });
 
-export const appRouter = createTRPCRouter({ hello });
+const helloAuthed = protectedProcedure.query(({ ctx }) => {
+  return {
+    greeting: `Hello ${ctx.session.user.email}!`,
+    userId: ctx.session.user.id,
+  };
+});
+
+export const appRouter = createTRPCRouter({ hello, helloAuthed });
 
 export type AppRouter = typeof appRouter;

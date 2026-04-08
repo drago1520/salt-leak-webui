@@ -1,9 +1,11 @@
 'use client';
+import { TrpcErr } from '@/lib/db-types';
 import { trpc } from '@/lib/trpc-client';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [greeting, setGreeting] = useState('Loading...');
+  const [authGreeting, setAuthGreeting] = useState('Loading auth...');
 
   useEffect(() => {
     let active = true;
@@ -13,6 +15,10 @@ export default function Home() {
         setGreeting(result.greeting);
       }
     });
+    trpc.helloAuthed
+      .query()
+      .then(res => setAuthGreeting(res.greeting))
+      .catch((err: TrpcErr) => setAuthGreeting(err.message));
 
     return () => {
       active = false;
@@ -24,6 +30,11 @@ export default function Home() {
       <div className="rounded-2xl border border-zinc-200 bg-white px-8 py-6 shadow-sm">
         <p className="font-mono text-sm tracking-[0.2em] text-zinc-500 uppercase">tRPC</p>
         <h1 className="mt-3 text-3xl font-semibold">{greeting}</h1>
+        <p className="mt-2 text-sm text-zinc-600">App Router route handler served from `/api/trpc`.</p>
+      </div>
+      <div className="rounded-2xl border border-zinc-200 bg-white px-8 py-6 shadow-sm">
+        <p className="font-mono text-sm tracking-[0.2em] text-zinc-500 uppercase">tRPC</p>
+        <h1 className="mt-3 text-3xl font-semibold">{authGreeting}</h1>
         <p className="mt-2 text-sm text-zinc-600">App Router route handler served from `/api/trpc`.</p>
       </div>
     </main>

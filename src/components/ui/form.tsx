@@ -45,7 +45,7 @@ const useFormField = () => {
 };
 
 function FormItem({ ...props }: React.ComponentProps<typeof Field>) {
-  return <Field {...props} data-invalid={props['data-invalid']} />;
+  return <Field {...props} data-invalid={props['aria-invalid']} />;
 }
 
 function FormLabel({ ...props }: React.ComponentProps<typeof FieldLabel>) {

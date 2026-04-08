@@ -5,7 +5,7 @@ export const sensorReadings = pgTable(
   'sensor_readings',
   {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().notNull(),
+    id: bigint({ mode: 'bigint' }).primaryKey().notNull(),
     receivedAt: timestamp('received_at', { mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),

@@ -11,6 +11,9 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
+  session: {
+    cookieCache: { enabled: true, maxAge: 60 * 60 }, //1 hr; If I revoke the session, it might not work if < 1 hr.
+  },
   plugins: [nextCookies()], //nextCookies MUST be last.
   database: drizzleAdapter(db, {
     provider: 'pg',

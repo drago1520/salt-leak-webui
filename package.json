@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@trpc/client": "^11.16.0",
     "@trpc/server": "^11.16.0",
+    "ag-grid-react": "^35.2.1",
     "better-auth": "^1.6.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
