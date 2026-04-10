@@ -53,7 +53,7 @@ export default function Grid({ rows }: { rows: SelectSensorReading[] }) {
     'last24Months',
   ];
   const colDefs = [
-    { field: 'id', filter: 'agBigIntColumnFilter', sort: 'desc' },
+    { field: 'id', filter: 'agBigIntColumnFilter', sortable: true, sort: 'desc' },
     {
       field: 'received_at',
       filter: 'agDateColumnFilter',
@@ -90,7 +90,7 @@ export default function Grid({ rows }: { rows: SelectSensorReading[] }) {
             // rowData={rows}
             theme={agGridTheme}
             rowSelection={{ mode: 'multiRow', headerCheckbox: false, checkboxes: true }}
-            defaultColDef={{ filter: true, sortable: true, filterParams: { maxNumConditions: 20 } }}
+            defaultColDef={{ filter: true, sortable: false, filterParams: { maxNumConditions: 20 } }}
             rowModelType="infinite"
             debug={process.env.NODE_ENV == 'development'}
             datasource={{
