@@ -1,5 +1,5 @@
 'use client';
-import { TrpcErr } from '@/lib/db-types';
+import { TrpcErr } from '@/lib/db-goodies';
 import { trpc } from '@/lib/trpc-client';
 import { useEffect, useState } from 'react';
 

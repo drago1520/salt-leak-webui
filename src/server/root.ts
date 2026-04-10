@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/trpc';
+import { agGridQuery } from './services/ag-grid';
 
 const hello = publicProcedure
   .input(
@@ -22,6 +23,6 @@ const helloAuthed = protectedProcedure.query(({ ctx }) => {
   };
 });
 
-export const appRouter = createTRPCRouter({ hello, helloAuthed });
+export const appRouter = createTRPCRouter({ hello, helloAuthed, agGridQuery });
 
 export type AppRouter = typeof appRouter;
