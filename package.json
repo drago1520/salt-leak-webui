@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "listen": "bun src/index.ts",
-    "send": "bun src/scripts/send-tcp.ts"
+    "send": "bun src/scripts/send-tcp.ts",
+    "csv:gen": "bun src/scripts/generate-sensor-csv.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

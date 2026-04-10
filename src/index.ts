@@ -1,4 +1,9 @@
-import { DATABASE_URL, DATACENTER_ID, IS_REAL_DEVICE_TEST, MACHINE_ID } from "./utils/env-schema";
+import {
+  DATABASE_URL,
+  DATACENTER_ID,
+  IS_REAL_DEVICE,
+  MACHINE_ID,
+} from "./utils/env-schema";
 import { generateID } from "./utils/generate-id";
 import { sensorOutputSchema } from "./utils/sensor-output-schema";
 import { readFromComPort } from "./read-from-COM";
@@ -15,8 +20,5 @@ export async function handleLine(rawLine: string) {
   `;
 }
 
-if (IS_REAL_DEVICE_TEST === "true") readFromComPort();
+if (IS_REAL_DEVICE === "true") readFromComPort();
 else readFromTcp();
-
-
-
