@@ -1,7 +1,8 @@
-import { DATACENTER_ID, MACHINE_ID } from "../utils/env-schema";
-import { generateID } from "../utils/generate-id";
-import { simulateSensorOutput } from "../utils/simulate-sensor-output";
-import { sensorOutputSchema } from "../utils/sensor-output-schema";
+import { writeFile } from "node:fs/promises";
+import { DATACENTER_ID, MACHINE_ID } from "../utils/env-schema.ts";
+import { generateID } from "../utils/generate-id.ts";
+import { simulateSensorOutput } from "../utils/simulate-sensor-output.ts";
+import { sensorOutputSchema } from "../utils/sensor-output-schema.ts";
 
 const RECORD_COUNT = Number(process.argv[2] ?? 10_500_000);
 const OUTPUT_PATH = process.argv[3] ?? `sensor-output-${RECORD_COUNT}.csv`;
@@ -40,6 +41,6 @@ const csv =
     ].join(",") + "\n";
   }).join("");
 
-await Bun.write(OUTPUT_PATH, csv);
+await writeFile(OUTPUT_PATH, csv, "utf8");
 
 console.log(`Wrote ${RECORD_COUNT} rows to ${OUTPUT_PATH}`);

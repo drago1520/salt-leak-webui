@@ -1,10 +1,10 @@
 import { SerialPort, ReadlineParser } from "serialport";
-import { SERIAL_PORT, SERIAL_DELIMITER } from "./utils/env-schema";
-import { handleLine } from ".";
+import { SERIAL_PORT_LISTEN, SERIAL_DELIMITER } from "./utils/env-schema.ts";
+import { handleLine } from "./index.ts";
 
 export function readFromComPort() {
   const port = new SerialPort({
-    path: SERIAL_PORT,
+    path: SERIAL_PORT_LISTEN,
     baudRate: 115200,
     dataBits: 8,
     parity: "none",
@@ -13,8 +13,8 @@ export function readFromComPort() {
 
   const parser = port.pipe(new ReadlineParser({ delimiter: SERIAL_DELIMITER }));
 
-  parser.on("data", rawLine => {
-    void handleLine(rawLine).catch(error => {
+  parser.on("data", (rawLine) => {
+    void handleLine(rawLine).catch((error) => {
       console.error("Line handling failed:", error);
     });
   });
@@ -23,7 +23,7 @@ export function readFromComPort() {
     console.log(`Reading sensor data from ${port.path}`);
   });
 
-  port.on("error", error => {
+  port.on("error", (error) => {
     console.error("Serial port error:", error);
   });
 

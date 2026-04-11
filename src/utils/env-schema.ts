@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { z } from "zod";
 
 export const envSchema = z.object({
@@ -22,7 +23,12 @@ export const envSchema = z.object({
       (value) => Number.isInteger(value) && value >= 0 && value <= 31,
       "MACHINE_ID must be an integer between 0 and 31.",
     ),
-  SERIAL_PORT: z.coerce.string().nonempty("SERIAL_PORT is missing from .env"),
+  SERIAL_PORT_LISTEN: z.coerce
+    .string()
+    .nonempty("SERIAL_PORT_LISTEN is missing from .env"),
+  SERIAL_PORT_SENDER: z.coerce
+    .string()
+    .nonempty("SERIAL_PORT_WRITER is missing from .env"),
   SERIAL_DELIMITER: z.coerce.string(),
   IS_REAL_DEVICE: z.coerce
     .string()
@@ -56,7 +62,8 @@ export const {
   DATABASE_URL,
   DATACENTER_ID,
   MACHINE_ID,
-  SERIAL_PORT,
+  SERIAL_PORT_LISTEN,
+  SERIAL_PORT_SENDER,
   SERIAL_DELIMITER,
   IS_REAL_DEVICE,
   TCP_HOST,

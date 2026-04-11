@@ -1,13 +1,17 @@
-import { SERIAL_DELIMITER, TCP_HOST, TCP_PORT, TCP_SEND_Hz } from "../utils/env-schema";
-import { presets, simulateSensorOutput } from "../utils/simulate-sensor-output";
+import { createConnection } from "node:net";
+import { SERIAL_DELIMITER, TCP_HOST, TCP_PORT, TCP_SEND_Hz } from "../utils/env-schema.ts";
+import { presets, simulateSensorOutput } from "../utils/simulate-sensor-output.ts";
 
-const socket = await Bun.connect({
-  hostname: TCP_HOST,
+const socket = createConnection({
+  host: TCP_HOST,
   port: TCP_PORT,
-  socket: {
-    data() {},
-  },
 });
+
+await new Promise<void>((resolve, reject) => {
+  socket.once("connect", resolve);
+  socket.once("error", reject);
+});
+
 console.log(`Connected to ${TCP_HOST}:${TCP_PORT}`);
 
 const intervalMs = Math.max(1, Math.round(1000 / TCP_SEND_Hz))  //0-2; 3-15 

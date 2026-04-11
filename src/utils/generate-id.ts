@@ -1,4 +1,4 @@
-import { ENV } from "./env-schema";
+import { ENV } from "./env-schema.ts";
 
 const DATACENTER_ID = BigInt(ENV.DATACENTER_ID);
 const MACHINE_ID = BigInt(ENV.MACHINE_ID);
