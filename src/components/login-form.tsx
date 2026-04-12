@@ -1,5 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LoaderCircleIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Field, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field';
@@ -76,7 +77,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
           />
           <Field>
             <Button type="submit" disabled={f.formState.isSubmitting}>
-              Login
+              {f.formState.isSubmitting && <LoaderCircleIcon className="size-4 animate-spin" />}
+              {f.formState.isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </Field>
           <FieldSeparator>Or continue with</FieldSeparator>

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, DM_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -70,7 +72,10 @@ export default function RootLayout({
       className={cn('h-full', 'antialiased', geistSans.variable, geistMono.variable, 'font-sans', dmSans.variable)}
     >
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        <body className="flex min-h-full flex-col">{children}</body>
+        <body className="flex min-h-full flex-col">
+          <TooltipProvider>{children}</TooltipProvider>
+          {process.env.NODE_ENV == 'development' && <ThemeToggle />}
+        </body>
       </ThemeProvider>
     </html>
   );
