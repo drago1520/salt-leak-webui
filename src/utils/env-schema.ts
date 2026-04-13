@@ -2,7 +2,7 @@ import "dotenv/config";
 import { z } from "zod";
 
 export const envSchema = z.object({
-  DATABASE_URL: z.coerce.string().nonempty("DATABASE_URL is missing from .env"),
+  BROKER_URL: z.url('BROKER_URL is missing. The sensor has nowhere to send data.'),
   DATACENTER_ID: z.coerce
     .number()
     .refine(
@@ -56,10 +56,11 @@ export const envSchema = z.object({
     ),
 });
 
-export const ENV = envSchema.parse(process.env);
+export const ENV = envSchema.safeParse(process.env).data;
+if(!ENV) throw new Error('env broken')
 
 export const {
-  DATABASE_URL,
+  BROKER_URL,
   DATACENTER_ID,
   MACHINE_ID,
   SERIAL_PORT_LISTEN,

@@ -1,6 +1,6 @@
 import { SerialPort, ReadlineParser } from "serialport";
-import { SERIAL_PORT_LISTEN, SERIAL_DELIMITER } from "./utils/env-schema.ts";
-import { handleLine } from "./index.ts";
+import { SERIAL_PORT_LISTEN, SERIAL_DELIMITER, BROKER_URL, MACHINE_ID, DATACENTER_ID } from "./utils/env-schema.ts";
+import { handleMessage } from "./utils/handle-message.ts";
 
 export function readFromComPort() {
   const port = new SerialPort({
@@ -13,10 +13,8 @@ export function readFromComPort() {
 
   const parser = port.pipe(new ReadlineParser({ delimiter: SERIAL_DELIMITER }));
 
-  parser.on("data", (rawLine) => {
-    void handleLine(rawLine).catch((error) => {
-      console.error("Line handling failed:", error);
-    });
+  parser.on("data", async (rawLine) => {
+    handleMessage(rawLine).catch(err => console.log(err))
   });
 
   port.on("open", () => {
