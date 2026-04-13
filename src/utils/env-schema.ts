@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const envSchema = z.object({
   BROKER_URL: z.url('BROKER_URL is missing. The sensor has nowhere to send data.'),
+  BROKER_PASS: z.string("BROKER_PASS is missing."),
   DATACENTER_ID: z.coerce
     .number()
     .refine(
@@ -61,6 +62,7 @@ if(!ENV) throw new Error('env broken')
 
 export const {
   BROKER_URL,
+  BROKER_PASS,
   DATACENTER_ID,
   MACHINE_ID,
   SERIAL_PORT_LISTEN,
