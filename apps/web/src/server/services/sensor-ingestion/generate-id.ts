@@ -1,7 +1,7 @@
 let lastTimestamp = 0n;
 let sequence = 0n;
 
-export function generateID(datacenterId: bigint, machineId: bigint): bigint {
+export function generateID(datacenterId: number, machineId: number): bigint {
   let timestamp = BigInt(Date.now());
 
   if (timestamp === lastTimestamp) {
@@ -12,5 +12,5 @@ export function generateID(datacenterId: bigint, machineId: bigint): bigint {
 
   lastTimestamp = timestamp;
 
-  return ((timestamp - 1704067200000n) << 22n) | (datacenterId << 17n) | (machineId << 12n) | sequence;
+  return ((timestamp - 1704067200000n) << 22n) | (BigInt(datacenterId) << 17n) | (BigInt(machineId) << 12n) | sequence;
 }

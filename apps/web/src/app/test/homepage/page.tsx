@@ -3,7 +3,8 @@ import { AgCharts } from 'ag-charts-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
-import { AgCartesianChartOptions, AgChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
+import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
+import { SensorReadingEvent } from '@/server/services/sensor-ingestion/sensor-events-SSE';
 
 const config = {
   active: { label: 'Active', dot: 'bg-success' },
@@ -47,7 +48,7 @@ const sensors: Record<
 };
 
 ModuleRegistry.registerModules([AllCommunityModule]);
-function Sparkline({ data }: { data: (number | null)[] }) {
+function StaticBars({ data }: { data: (number | null)[] }) {
   const chartData = data
     .map((value, i) => (value == null ? null : { time: i + 1, value }))
     .filter((item): item is { time: number; value: number } => item !== null);
@@ -68,6 +69,50 @@ function Sparkline({ data }: { data: (number | null)[] }) {
         type: "bar",
         xKey: "time",
         yKey: "value",
+        itemStyler: ({datum}) => ({
+          fill: datum.value <= 10 ? "oklch(0.704 0.191 22.216)" : "#9ca3af",
+        })
+      },
+    ],
+  };
+
+  return (
+    <div className="">
+      <AgCharts options={options} />
+    </div>
+  );
+}
+
+function RealTimePinBars({data}: {data?: SensorReadingEvent[]}) {
+  // if (!data?.length) return <span className="text-muted-foreground text-sm">—</span>;
+  const initialData: SensorReadingEvent['pins'] = [
+    { pin: 'p1Ohms', value: 20 },
+    { pin: 'p2Ohms', value: 2 },
+    { pin: 'p3Ohms', value: 5 },
+    { pin: 'p4Ohms', value: 30 },
+    { pin: 'p5Ohms', value: 21 },
+    { pin: 'p6Ohms', value: 23 },
+  ];
+  //prettier-ignore
+  const options: AgCartesianChartOptions = {
+    width: 480,
+    height: 160,
+    // data,
+    data: initialData,
+    padding: { top: 0, right: 0, bottom: 0, left: 0 },
+    dataIdKey: 'pin',
+    background: { fill: "transparent" },
+    legend: { enabled: false },
+    axes: { x : { type: 'category', label: {enabled: false}}, y: { type: 'number', label: {enabled: false}, gridLine: {enabled: false}, line: {enabled: false}}},
+    series: [
+      {
+        type: "bar",
+        xKey: "pin",
+        yKey: "value",
+        yName: 'resistance kOhm',
+        tooltip: {
+          renderer: ({datum}) => `${datum.pin}: ${datum.value} kOhm`
+        },
         itemStyler: ({datum}) => ({
           fill: datum.value <= 10 ? "oklch(0.704 0.191 22.216)" : "#9ca3af",
         })
@@ -150,7 +195,7 @@ function SensorStatusCard({
                     {s.unit}
                   </span>
                 )}
-                <Sparkline data={s.sparkline} />
+                <StaticBars data={s.sparkline} />
               </div>
             )}
           </div>
@@ -172,6 +217,7 @@ export default function SensorStatusCards() {
 
   return (
     <div className="w-full rounded-2xl font-mono">
+      <RealTimePinBars />
       <div className="mb-3 flex items-center justify-between">
         <span className="text-muted-foreground text-sm">Sensors</span>
         <span className="text-muted-foreground text-sm">{total} total</span>

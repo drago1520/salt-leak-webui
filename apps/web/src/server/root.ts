@@ -1,6 +1,7 @@
-import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/trpc';
 import { agGridQuery } from './services/ag-grid';
+import z from 'zod';
+import { sensorReadingsLive } from './services/ag-charts/trpc';
 
 const hello = publicProcedure
   .input(
@@ -23,6 +24,7 @@ const helloAuthed = protectedProcedure.query(({ ctx }) => {
   };
 });
 
-export const appRouter = createTRPCRouter({ hello, helloAuthed, agGridQuery });
+
+export const appRouter = createTRPCRouter({ hello, helloAuthed, agGridQuery, sensorReadingsLive });
 
 export type AppRouter = typeof appRouter;
