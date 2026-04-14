@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@ca/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,11 +11,15 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ca/db": "workspace:*",
+    "@ca/ts-config": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@trpc/client": "^11.16.0",
     "@trpc/server": "^11.16.0",
+    "aedes": "^1.0.2",
     "ag-charts-community": "^13.2.1",
     "ag-charts-react": "^13.2.1",
+    "ag-grid-community": "^35.2.1",
     "ag-grid-react": "^35.2.1",
     "better-auth": "^1.6.0",
     "class-variance-authority": "^0.7.1",

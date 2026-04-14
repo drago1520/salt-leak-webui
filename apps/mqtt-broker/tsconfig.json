@@ -3,8 +3,10 @@
     // Environment setup & latest features
     "lib": ["ESNext"],
     "target": "ESNext",
+    "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+    "types": ["bun"],
 
     // Bundler mode
     "allowImportingTsExtensions": true,

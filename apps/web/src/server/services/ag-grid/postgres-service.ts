@@ -1,7 +1,7 @@
 import type { BigIntFilterModel, DateFilterModel, NumberFilterModel, TextFilterModel } from 'ag-grid-community';
+import { db } from 'db';
 import { createSqlService } from './shared-service';
 import { sql } from 'drizzle-orm';
-import { db } from '@/server/db/db';
 import { dateRangeSql, postgresTimestampLiteral, sqlStringLiteral, validateBigInt } from './goodies';
 
 const textFilters: Record<string, (key: string, item: TextFilterModel) => string> = {

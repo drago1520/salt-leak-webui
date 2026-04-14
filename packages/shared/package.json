@@ -1,0 +1,20 @@
+{
+  "name": "@ca/shared",
+  "module": "./src/index.ts",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@ca/ts-config": "workspace:*",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@ca/db": "workspace:*",
+    "zod": "^4.3.6"
+  }
+}

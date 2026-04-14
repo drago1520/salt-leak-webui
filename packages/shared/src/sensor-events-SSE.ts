@@ -1,0 +1,10 @@
+import type { SelectSensorReadings } from "@ca/db/db-types.js";
+
+type Pins = Pick<SelectSensorReadings, 'p1Ohms' | 'p2Ohms' | 'p3Ohms' | 'p4Ohms' | 'p5Ohms' | 'p6Ohms'>
+
+export type SensorReadingEvent = {
+  id: SelectSensorReadings['id']
+  pins: { pin: keyof Pins; value: number }[]
+  datacenterId: number
+  machineId: number
+}

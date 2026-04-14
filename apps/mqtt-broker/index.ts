@@ -1,32 +1,43 @@
 import 'dotenv/config';
 import { Aedes, type AedesPublishPacket, type Client } from 'aedes';
-import { EventEmitter } from 'node:events';
 import { createServer } from 'node:net';
 import { z } from 'zod';
-import { db } from '../../db/db';
-import { sensorReadings } from '../../db/drizzle-kit/schema';
-import { generateID } from '../sensor-ingestion/generate-id';
-import { SensorEvents } from '../sensor-ingestion/sensor-events-SSE';
-import { sensorOutputSchema } from '../sensor-ingestion/sensor-output-schema';
+import type { SensorReadingEvent } from '@ca/shared/sensor-events-SSE.ts';
+import { db } from '@ca/db';
+import { sensorReadings } from '@ca/db/drizzle-kit/schema';
+import { generateID } from '@ca/shared/generate-id.ts';
+import { sensorOutputSchema } from '@ca/shared/sensor-output-schema.ts';
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   MQTT_PORT: z.coerce.number().int().positive().default(1883),
-  SSE_PORT: z.coerce.number().int().positive().default(4000),
+  WS_PORT: z.coerce.number().int().positive().default(4000),
 });
 
 const env = envSchema.parse(process.env);
-const broker = new Aedes();
-const sseEmitter = new EventEmitter<SensorEvents>();
-
+const broker = await Aedes.createBroker();
 const publishTopicSchema = z.string().regex(/^sensor-readings\/\d+\/\d+$/);
+
+const wsServer = Bun.serve({
+  port: env.WS_PORT,
+  fetch(req, server) {
+    if (server.upgrade(req)) return;
+    return new Response('not found', { status: 404 });
+  },
+  websocket: {
+    open(ws) { ws.subscribe('readings'); console.log('WS client connected'); },
+    close(ws) { ws.unsubscribe('readings'); console.log('WS client disconnected'); },
+    message() {},
+  },
+});
 
 broker.on('publish', async (packet: AedesPublishPacket, client: Client | null) => {
   if (!client) return;
-
   try {
     publishTopicSchema.parse(packet.topic);
-    const [, datacenterIdText, machineIdText] = packet.topic.match(/^sensor-readings\/(\d+)\/(\d+)$/) ?? [];
+    const match = packet.topic.match(/^sensor-readings\/(\d+)\/(\d+)$/);
+    const datacenterIdText = match?.[1];
+    const machineIdText = match?.[2];
     if (!datacenterIdText || !machineIdText)
       throw new Error('Topic must be sensor-readings/<datacenterId>/<machineId>');
 
@@ -34,8 +45,8 @@ broker.on('publish', async (packet: AedesPublishPacket, client: Client | null) =
     const machineId = Number(machineIdText);
     const reading = sensorOutputSchema.parse(packet.payload.toString());
     const id = generateID(datacenterId, machineId);
-    console.log('id :', id);
-    sseEmitter.emit('reading', {
+
+    const event: SensorReadingEvent = {
       id,
       datacenterId,
       machineId,
@@ -47,7 +58,10 @@ broker.on('publish', async (packet: AedesPublishPacket, client: Client | null) =
         { pin: 'p5Ohms', value: reading.p5Ohms },
         { pin: 'p6Ohms', value: reading.p6Ohms },
       ],
-    });
+    };
+
+    const payload = JSON.stringify(event, (_, v) => (typeof v === 'bigint' ? v.toString() : v));
+    wsServer.publish('readings', payload);
 
     await db.insert(sensorReadings).values({
       id,
@@ -70,51 +84,17 @@ broker.on('publish', async (packet: AedesPublishPacket, client: Client | null) =
       machineId,
     });
   } catch (error) {
-    console.error('MQTT publish failed:', error);
+    console.error('MQTT publish failed:', error instanceof Error ? error.message : error);
   }
 });
 
-broker.on('client', (client: Client) => console.log('connected:', client.id));
-broker.on('clientDisconnect', (client: Client) => console.log('disconnected:', client.id));
-broker.on('connectionError', (error) => console.error('broker error:', error));
-broker.on('clientError', (error) => console.error('broker error:', error));
+broker.on('client', (client: Client) => console.log('MQTT connected:', client.id));
+broker.on('clientDisconnect', (client: Client) => console.log('MQTT disconnected:', client.id));
+broker.on('connectionError', error => console.error('broker error:', error));
+broker.on('clientError', error => console.error('broker error:', error));
 
 createServer(broker.handle).listen(env.MQTT_PORT, () => {
   console.log(`MQTT TCP on :${env.MQTT_PORT}`);
 });
 
-Bun.serve({
-  port: env.SSE_PORT,
-  fetch(req) {
-    if (new URL(req.url).pathname !== '/readings')
-      return new Response('not found', { status: 404 });
-
-    let cleanup = () => {};
-
-    const stream = new ReadableStream<Uint8Array>({
-      start(controller) {
-        const encoder = new TextEncoder();
-        const handler = (data: unknown) => {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
-        };
-
-        sseEmitter.on('reading', handler);
-        controller.enqueue(encoder.encode('retry: 1000\n\n'));
-        cleanup = () => sseEmitter.off('reading', handler);
-      },
-      cancel() {
-        cleanup();
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-  },
-});
-
-console.log(`SSE on :${env.SSE_PORT}`);
+console.log(`WS on :${env.WS_PORT}`);

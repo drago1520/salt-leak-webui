@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db } from '@/server/db/db';
-import { sensorReadings } from '@/server/db/drizzle-kit/schema';
+import { db } from 'db';
+import { sensorReadings } from 'db/drizzle-kit/schema';
 import { sensorEvents } from '@/server/services/sensor-ingestion/sensor-events-SSE';
 import { generateID } from '@/server/services/sensor-ingestion/generate-id';
 import { sensorOutputSchema } from '@/server/services/sensor-ingestion/sensor-output-schema';
@@ -24,14 +24,17 @@ export async function POST(request: Request) {
 
     sensorEvents.emit('reading', {
       id,
+      machineId,
+      datacenterId,
       pins: [
-      { pin: 'p1Ohms', value: reading.p1Ohms },
-      { pin: 'p2Ohms', value: reading.p2Ohms },
-      { pin: 'p3Ohms', value: reading.p3Ohms },
-      { pin: 'p4Ohms', value: reading.p4Ohms },
-      { pin: 'p5Ohms', value: reading.p5Ohms },
-      { pin: 'p6Ohms', value: reading.p6Ohms },
-    ]});
+        { pin: 'p1Ohms', value: reading.p1Ohms },
+        { pin: 'p2Ohms', value: reading.p2Ohms },
+        { pin: 'p3Ohms', value: reading.p3Ohms },
+        { pin: 'p4Ohms', value: reading.p4Ohms },
+        { pin: 'p5Ohms', value: reading.p5Ohms },
+        { pin: 'p6Ohms', value: reading.p6Ohms },
+      ],
+    });
 
     await db.insert(sensorReadings).values({
       id,

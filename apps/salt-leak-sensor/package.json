@@ -1,5 +1,5 @@
 {
-  "name": "copenhagenatomics",
+  "name": "@ca/salt-leak-sensor",
   "type": "module",
   "private": true,
   "scripts": {
@@ -15,7 +15,11 @@
   "dependencies": {
     "@serialport/parser-readline": "^13.0.0",
     "dotenv": "^16.6.1",
+    "mqtt": "^5.15.1",
     "serialport": "^13.0.0",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@ca/ts-config": "workspace:*"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "@ca/db",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./drizzle-kit/schema": "./src/drizzle-kit/schema.ts",
+    "./*": "./src/*"
+  },
+  "private": true,
+  "devDependencies": {
+    "@ca/ts-config": "workspace:*",
+    "@types/bun": "latest",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.20.0"
+  }
+}

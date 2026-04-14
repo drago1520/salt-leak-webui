@@ -3,10 +3,11 @@
     // Environment setup & latest features
     "lib": ["ESNext"],
     "target": "ESNext",
+    "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+    "types": ["bun"],
 
-    // Bundler mode
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
@@ -21,7 +22,18 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
   },
   "extends": "@ca/ts-config/tsconfig.base.json"
 }
+
+// {
+//   "compilerOptions": {
+//     "module": "nodenext",
+//     "moduleResolution": "nodenext"
+//   }
+// }
+// // package.json
+// {
+//   "type": "module"
+// }

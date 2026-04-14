@@ -1,0 +1,8 @@
+{
+  "name": "@ca/ts-config",
+  "exports": {
+    "./*": "./*"
+  },
+  "type": "module",
+  "private": true
+}

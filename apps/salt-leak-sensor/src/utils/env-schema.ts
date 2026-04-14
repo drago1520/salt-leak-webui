@@ -2,8 +2,7 @@ import "dotenv/config";
 import { z } from "zod";
 
 export const envSchema = z.object({
-  BROKER_URL: z.url('BROKER_URL is missing. The sensor has nowhere to send data.'),
-  BROKER_PASS: z.string("BROKER_PASS is missing."),
+  BROKER_URL: z.string().min(1, 'BROKER_URL is missing. The sensor has nowhere to send data. Use mqtt://host:1883'),
   DATACENTER_ID: z.coerce
     .number()
     .refine(
@@ -62,7 +61,6 @@ if(!ENV) throw new Error('env broken')
 
 export const {
   BROKER_URL,
-  BROKER_PASS,
   DATACENTER_ID,
   MACHINE_ID,
   SERIAL_PORT_LISTEN,
