@@ -1,0 +1,21 @@
+{
+  "name": "copenhagenatomics",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "listen": "node src/index.ts",
+    "send": "node src/scripts/send-tcp-seed.ts",
+    "send:com": "node src/scripts/send-com-seed.ts",
+    "csv:gen": "node src/scripts/generate-sensor-csv.ts",
+    "csv:import": "node src/scripts/import-sensor-csv.ts"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@serialport/parser-readline": "^13.0.0",
+    "dotenv": "^16.6.1",
+    "serialport": "^13.0.0",
+    "zod": "^4.3.6"
+  }
+}
