@@ -6,9 +6,6 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForBuild: true,
   },
-  turbopack: {
-    root: process.cwd(),
-  },
   serverExternalPackages: ['pg'],
 };
 
