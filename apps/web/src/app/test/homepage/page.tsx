@@ -2,7 +2,8 @@
 import { AgCharts } from 'ag-charts-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useWebSocket } from '@/hooks/use-websocket';
 import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
 import { SensorReadingEvent } from '@ca/shared/sensor-events-SSE.ts';
 import { type SensorChannel, toMqttTopic } from '@ca/shared/sensor-channel.ts';
@@ -23,10 +24,11 @@ const sensors: Record<
     value: number | null;
     unit: string;
     sparkline: (number | null)[];
+    channel?: RealTimePinBarsProps;
   }[]
 > = {
   active: [
-    { name: 'Salt-01', meta: 'Room A', value: 72, unit: ' kΩ', sparkline: [18, 21, 24, 28, 31, 27, 25] },
+    { name: 'Salt-01a', meta: 'Room A', value: 72, unit: ' kΩ', sparkline: [], channel: { host: 'localhost:4000', companyId: 'CA', locationId: 'room-a', sensorType: 'salt-leak', datacenterId: 1, machineId: 0 } },
     { name: 'Temp-02', meta: 'Room B', value: 69, unit: '°F', sparkline: [14, 16, 19, 22, 24, 21, 20] },
     { name: 'Humid-01', meta: 'Floor 2', value: 54, unit: '%', sparkline: [35, 38, 41, 44, 42, 40, 39] },
     { name: 'CO2-01', meta: 'Lab', value: 412, unit: 'ppm', sparkline: [22, 26, 29, 33, 37, 34, 30] },
@@ -87,21 +89,15 @@ function StaticBars({ data }: { data: (number | null)[] }) {
 type RealTimePinBarsProps = SensorChannel & { host: string };
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
-  const [pins, setPins] = useState<SensorReadingEvent['pins']>([]);
+  const event = useWebSocket<SensorReadingEvent>(`ws://${host}?channel=${toMqttTopic(channel)}`);
+  const pins = event?.pins ?? [];
 
-  useEffect(() => {
-    const ws = new WebSocket(`ws://${host}?channel=${toMqttTopic(channel)}`);
-    ws.onmessage = (e) => {
-      const event: SensorReadingEvent = JSON.parse(e.data as string);
-      setPins(event.pins);
-    };
-    return () => ws.close();
-  }, [host, channel.companyId, channel.locationId, channel.sensorType, channel.datacenterId, channel.machineId]);
+  if (!pins.length) return <span className="text-muted-foreground text-sm">…</span>;
 
   //prettier-ignore
   const options: AgCartesianChartOptions = {
-    width: 480,
-    height: 160,
+    width: 48,
+    height: 16,
     data: pins,
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
     dataIdKey: 'pin',
@@ -199,7 +195,7 @@ function SensorStatusCard({
                     {s.unit}
                   </span>
                 )}
-                <StaticBars data={s.sparkline} />
+                {s.channel ? <RealTimePinBars {...s.channel} /> : <StaticBars data={s.sparkline} />}
               </div>
             )}
           </div>
@@ -221,7 +217,6 @@ export default function SensorStatusCards() {
 
   return (
     <div className="w-full rounded-2xl font-mono">
-      <RealTimePinBars host="localhost:4000" companyId="CA" locationId="room-a" sensorType="salt-leak" datacenterId={1} machineId={0} />
       <div className="mb-3 flex items-center justify-between">
         <span className="text-muted-foreground text-sm">Sensors</span>
         <span className="text-muted-foreground text-sm">{total} total</span>
