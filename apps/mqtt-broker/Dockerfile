@@ -3,10 +3,12 @@ WORKDIR /app
 
 # Copy workspace manifests for dependency resolution
 COPY package.json bun.lock ./
-COPY packages/ts-config/package.json ./packages/ts-config/package.json
-COPY packages/shared/package.json    ./packages/shared/package.json
-COPY packages/db/package.json        ./packages/db/package.json
-COPY apps/mqtt-broker/package.json   ./apps/mqtt-broker/package.json
+COPY packages/ts-config/package.json    ./packages/ts-config/package.json
+COPY packages/shared/package.json       ./packages/shared/package.json
+COPY packages/db/package.json           ./packages/db/package.json
+COPY apps/mqtt-broker/package.json      ./apps/mqtt-broker/package.json
+COPY apps/salt-leak-sensor/package.json ./apps/salt-leak-sensor/package.json
+COPY apps/web/package.json              ./apps/web/package.json
 
 # Install all dependencies (workspace-aware)
 RUN bun install --frozen-lockfile
