@@ -1,5 +1,8 @@
 import mqtt from "mqtt";
-import { sensorChannelSchema, toMqttTopic } from "ca/shared/sensor-channel.ts";
+import {
+  sensorChannelSchema,
+  toMqttTopic,
+} from "@repo/shared/sensor-channel.ts";
 import {
   BROKER_URL,
   MQTT_USERNAME,

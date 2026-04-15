@@ -2,12 +2,15 @@ import "dotenv/config";
 import { Aedes, type AedesPublishPacket, type Client } from "aedes";
 import { createServer } from "node:net";
 import { z } from "zod";
-import type { SensorReadingEvent } from "ca/shared/sensor-events-SSE.ts";
-import { sensorChannelSchema, toMqttTopic } from "ca/shared/sensor-channel.ts";
-import { db } from "ca/db";
-import { sensorReadings } from "ca/db/drizzle-kit/schema";
-import { generateID } from "ca/shared/generate-id.ts";
-import { sensorOutputSchema } from "ca/shared/sensor-output-schema.ts";
+import type { SensorReadingEvent } from "@repo/shared/sensor-events-SSE.ts";
+import {
+  sensorChannelSchema,
+  toMqttTopic,
+} from "@repo/shared/sensor-channel.ts";
+import { db } from "@repo/db";
+import { sensorReadings } from "@repo/db/drizzle-kit/schema.ts";
+import { generateID } from "@repo/shared/generate-id.ts";
+import { sensorOutputSchema } from "@repo/shared/sensor-output-schema.ts";
 
 const env = z
   .object({

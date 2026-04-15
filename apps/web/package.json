@@ -1,5 +1,5 @@
 {
-  "name": "ca/web",
+  "name": "@repo/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,8 +11,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "ca/db": "workspace:*",
-    "ca/ts-config": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/ts-config": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@trpc/client": "^11.16.0",
     "@trpc/server": "^11.16.0",

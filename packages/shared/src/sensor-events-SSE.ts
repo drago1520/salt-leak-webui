@@ -1,4 +1,4 @@
-import type { SelectSensorReadings } from "ca/db/db-types.js";
+import type { SelectSensorReadings } from "@repo/db/db-types.js";
 
 type Pins = Pick<
   SelectSensorReadings,

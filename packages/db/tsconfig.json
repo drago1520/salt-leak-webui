@@ -24,7 +24,7 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "extends": "ca/ts-config/tsconfig.base.json"
+  "extends": "@repo/ts-config/tsconfig.base.json"
 }
 
 // {

@@ -3,16 +3,16 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "ca",
+      "name": "@repo",
       "dependencies": {
-        "ca/db": "workspace:*",
-        "ca/shared": "workspace:*",
+        "@repo/db": "workspace:*",
+        "@repo/shared": "workspace:*",
         "typescript": "^6.0.2",
         "zod": "^4.3.6",
       },
       "devDependencies": {
+        "@repo/ts-config": "workspace:*",
         "@types/bun": "^1.3.12",
-        "ca/ts-config": "workspace:*",
         "turbo": "^2.9.6",
       },
       "peerDependencies": {
@@ -20,22 +20,22 @@
       },
     },
     "apps/mqtt-broker": {
-      "name": "ca/mqtt-broker",
+      "name": "@repo/mqtt-broker",
       "dependencies": {
+        "@repo/db": "workspace:*",
+        "@repo/shared": "workspace:*",
         "aedes": "^1.0.2",
-        "ca/db": "workspace:*",
-        "ca/shared": "workspace:*",
         "dotenv": "^17.4.2",
       },
       "devDependencies": {
-        "ca/ts-config": "workspace:*",
+        "@repo/ts-config": "workspace:*",
       },
       "peerDependencies": {
         "typescript": "^5",
       },
     },
     "apps/salt-leak-sensor": {
-      "name": "ca/salt-leak-sensor",
+      "name": "@repo/salt-leak-sensor",
       "dependencies": {
         "@serialport/parser-readline": "^13.0.0",
         "dotenv": "^16.6.1",
@@ -44,17 +44,19 @@
         "zod": "^4.3.6",
       },
       "devDependencies": {
-        "ca/ts-config": "workspace:*",
+        "@repo/ts-config": "workspace:*",
       },
       "peerDependencies": {
         "typescript": "^5",
       },
     },
     "apps/web": {
-      "name": "ca/web",
+      "name": "@repo/web",
       "version": "0.1.0",
       "dependencies": {
         "@hookform/resolvers": "^5.2.2",
+        "@repo/db": "workspace:*",
+        "@repo/ts-config": "workspace:*",
         "@trpc/client": "^11.16.0",
         "@trpc/server": "^11.16.0",
         "aedes": "^1.0.2",
@@ -63,8 +65,6 @@
         "ag-grid-community": "^35.2.1",
         "ag-grid-react": "^35.2.1",
         "better-auth": "^1.6.0",
-        "ca/db": "workspace:*",
-        "ca/ts-config": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "drizzle-orm": "^0.45.2",
@@ -107,15 +107,15 @@
       },
     },
     "packages/db": {
-      "name": "ca/db",
+      "name": "@repo/db",
       "dependencies": {
         "drizzle-orm": "^0.45.2",
         "pg": "^8.20.0",
       },
       "devDependencies": {
+        "@repo/ts-config": "workspace:*",
         "@types/bun": "latest",
         "@types/pg": "^8.20.0",
-        "ca/ts-config": "workspace:*",
         "drizzle-kit": "^0.31.10",
       },
       "peerDependencies": {
@@ -123,21 +123,21 @@
       },
     },
     "packages/shared": {
-      "name": "ca/shared",
+      "name": "@repo/shared",
       "dependencies": {
-        "ca/db": "workspace:*",
+        "@repo/db": "workspace:*",
         "zod": "^4.3.6",
       },
       "devDependencies": {
+        "@repo/ts-config": "workspace:*",
         "@types/bun": "latest",
-        "ca/ts-config": "workspace:*",
       },
       "peerDependencies": {
         "typescript": "^5",
       },
     },
     "packages/ts-config": {
-      "name": "ca/ts-config",
+      "name": "@repo/ts-config",
     },
   },
   "trustedDependencies": [
@@ -571,6 +571,18 @@
 
     "@radix-ui/rect": ["@radix-ui/rect@1.1.1", "", {}, "sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw=="],
 
+    "@repo/db": ["@repo/db@workspace:packages/db"],
+
+    "@repo/mqtt-broker": ["@repo/mqtt-broker@workspace:apps/mqtt-broker"],
+
+    "@repo/salt-leak-sensor": ["@repo/salt-leak-sensor@workspace:apps/salt-leak-sensor"],
+
+    "@repo/shared": ["@repo/shared@workspace:packages/shared"],
+
+    "@repo/ts-config": ["@repo/ts-config@workspace:packages/ts-config"],
+
+    "@repo/web": ["@repo/web@workspace:apps/web"],
+
     "@rtsao/scc": ["@rtsao/scc@1.1.0", "", {}, "sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g=="],
 
     "@sec-ant/readable-stream": ["@sec-ant/readable-stream@0.4.1", "", {}, "sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg=="],
@@ -848,18 +860,6 @@
     "bundle-name": ["bundle-name@4.1.0", "", { "dependencies": { "run-applescript": "^7.0.0" } }, "sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q=="],
 
     "bytes": ["bytes@3.1.2", "", {}, "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg=="],
-
-    "ca/db": ["ca/db@workspace:packages/db"],
-
-    "ca/mqtt-broker": ["ca/mqtt-broker@workspace:apps/mqtt-broker"],
-
-    "ca/salt-leak-sensor": ["ca/salt-leak-sensor@workspace:apps/salt-leak-sensor"],
-
-    "ca/shared": ["ca/shared@workspace:packages/shared"],
-
-    "ca/ts-config": ["ca/ts-config@workspace:packages/ts-config"],
-
-    "ca/web": ["ca/web@workspace:apps/web"],
 
     "call-bind": ["call-bind@1.0.9", "", { "dependencies": { "call-bind-apply-helpers": "^1.0.2", "es-define-property": "^1.0.1", "get-intrinsic": "^1.3.0", "set-function-length": "^1.2.2" } }, "sha512-a/hy+pNsFUTR+Iz8TCJvXudKVLAnz/DyeSUo10I5yvFDQJBFU2s9uqQpoSrJlroHUKoKqzg+epxyP9lqFdzfBQ=="],
 
@@ -1909,6 +1909,10 @@
 
     "@noble/curves/@noble/hashes": ["@noble/hashes@1.8.0", "", {}, "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="],
 
+    "@repo/salt-leak-sensor/dotenv": ["dotenv@16.6.1", "", {}, "sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow=="],
+
+    "@repo/web/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+
     "@serialport/binding-mock/debug": ["debug@4.4.0", "", { "dependencies": { "ms": "^2.1.3" } }, "sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA=="],
 
     "@serialport/bindings-cpp/@serialport/parser-readline": ["@serialport/parser-readline@12.0.0", "", { "dependencies": { "@serialport/parser-delimiter": "12.0.0" } }, "sha512-O7cywCWC8PiOMvo/gglEBfAkLjp/SENEML46BXDykfKP5mTPM46XMaX1L0waWU6DXJpBgjaL7+yX6VriVPbN4w=="],
@@ -1942,10 +1946,6 @@
     "ajv-formats/ajv": ["ajv@8.18.0", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "fast-uri": "^3.0.1", "json-schema-traverse": "^1.0.0", "require-from-string": "^2.0.2" } }, "sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A=="],
 
     "bl/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
-
-    "ca/salt-leak-sensor/dotenv": ["dotenv@16.6.1", "", {}, "sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow=="],
-
-    "ca/web/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 
     "cliui/string-width": ["string-width@4.2.3", "", { "dependencies": { "emoji-regex": "^8.0.0", "is-fullwidth-code-point": "^3.0.0", "strip-ansi": "^6.0.1" } }, "sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g=="],
 

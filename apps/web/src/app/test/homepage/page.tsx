@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { useState, useEffect } from 'react';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
-import { SensorReadingEvent } from 'ca/shared/sensor-events-SSE.ts';
-import { type SensorChannel, toMqttTopic } from 'ca/shared/sensor-channel.ts';
+import { SensorReadingEvent } from '@repo/shared/sensor-events-SSE.ts';
+import { type SensorChannel, toMqttTopic } from '@repo/shared/sensor-channel.ts';
 
 const config = {
   active: { label: 'Active', dot: 'bg-success' },
