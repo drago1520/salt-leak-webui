@@ -131,7 +131,7 @@ function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
     `ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_WS_SECRET}`,
   );
   const pins = event?.pins ?? [];
-  if (!pins.length) return <span className="text-muted-foreground text-sm">…</span>;
+  if (!pins.length) return <span className="text-muted-foreground text-sm">CONNECT SENSOR</span>;
   return <PinBarsChart pins={pins} />;
 }
 

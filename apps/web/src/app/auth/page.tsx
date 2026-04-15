@@ -8,9 +8,9 @@ export default function LoginPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex flex-col items-center justify-center">
             <div className="relative h-10 w-32">
-              <Image src="/logo.png" alt="logo" fill />
+              <Image src="/logo.png" alt="logo" fill className="dark:invert" />
             </div>
-            <p className="text-muted-foreground/20 text-xs">(unofficial)</p>
+            <p className="text-muted-foreground text-xs">(unofficial, yet)</p>
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -19,11 +19,11 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="relative hidden lg:block">
         <img
           src="/banner.jpg"
           alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
     </div>
