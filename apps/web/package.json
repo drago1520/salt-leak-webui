@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node next build",
-    "start": "node next start",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint",
     "db:pull": "drizzle-kit pull",
     "prepare": "husky"
