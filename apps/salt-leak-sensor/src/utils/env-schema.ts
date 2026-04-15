@@ -56,6 +56,7 @@ export const envSchema = z.object({
       (value) => !Number.isNaN(value) && Number.isFinite(value) && value > 0,
       "TCP_SEND_Hz must be > 0.",
     ),
+    FAIL_CHANCE: z.coerce.number().int().nonnegative().default(0)
 });
 
 export const ENV = envSchema.safeParse(process.env).data;
@@ -74,4 +75,5 @@ export const {
   TCP_HOST,
   TCP_PORT,
   TCP_SEND_Hz,
+  FAIL_CHANCE
 } = ENV;
