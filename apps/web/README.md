@@ -33,7 +33,7 @@ bun run db:generate
 bun run db:migrate
 ```
 
-Connection config is read from `DATABASE_URL`. Add your tables to `src/db/schema.ts` and use the shared client from `src/db/index.ts`.
+Connection config is read from `DB_URL`. Add your tables to `src/db/schema.ts` and use the shared client from `src/db/index.ts`.
 
 ## Learn More
 

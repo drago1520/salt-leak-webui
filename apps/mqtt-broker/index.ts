@@ -14,7 +14,7 @@ import { sensorOutputSchema } from "@repo/shared/sensor-output-schema.ts";
 
 const env = z
   .object({
-    DATABASE_URL: z.string().min(1),
+    DB_URL: z.string().min(1),
     MQTT_PORT: z.coerce.number().int().positive().default(1883),
     WS_PORT: z.coerce.number().int().positive().default(4000),
     MQTT_USERNAME: z.string().min(1),
