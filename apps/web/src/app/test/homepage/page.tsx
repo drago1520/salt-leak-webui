@@ -2,7 +2,7 @@
 import { AgCharts } from 'ag-charts-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
 import { SensorReadingEvent } from '@ca/shared/sensor-events-SSE.ts';
@@ -15,6 +15,11 @@ const config = {
 } as const;
 
 type SensorType = keyof typeof config;
+type Pins = SensorReadingEvent['pins'];
+type RealTimePinBarsProps = SensorChannel & { host: string };
+
+const PINS = ['p1Ohms', 'p2Ohms', 'p3Ohms', 'p4Ohms', 'p5Ohms', 'p6Ohms'] as const;
+const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const sensors: Record<
   SensorType,
@@ -28,12 +33,26 @@ const sensors: Record<
   }[]
 > = {
   active: [
-    { name: 'Salt-01a', meta: 'Room A', value: 72, unit: ' kΩ', sparkline: [], channel: { host: 'localhost:4000', companyId: 'CA', locationId: 'room-a', sensorType: 'salt-leak', datacenterId: 1, machineId: 0 } },
+    {
+      name: 'Salt-01a',
+      meta: 'Room A',
+      value: 72,
+      unit: ' kΩ',
+      sparkline: [],
+      channel: {
+        host: 'localhost:4000',
+        companyId: 'CA',
+        locationId: 'room-a',
+        sensorType: 'salt-leak',
+        datacenterId: 1,
+        machineId: 0,
+      },
+    },
     { name: 'Temp-02', meta: 'Room B', value: 69, unit: '°F', sparkline: [14, 16, 19, 22, 24, 21, 20] },
     { name: 'Humid-01', meta: 'Floor 2', value: 54, unit: '%', sparkline: [35, 38, 41, 44, 42, 40, 39] },
-    { name: 'CO2-01', meta: 'Lab', value: 412, unit: 'ppm', sparkline: [22, 26, 29, 33, 37, 34, 30] },
-    { name: 'Press-01', meta: 'Roof', value: 101, unit: 'kPa', sparkline: [10, 12, 13, 15, 14, 13, 12] },
-    { name: 'CO2-03', meta: 'Office', value: 398, unit: 'ppm', sparkline: [20, 23, 27, 30, 32, 29, 28] },
+    { name: 'CO2-01', meta: 'Lab', value: 412, unit: ' ppm', sparkline: [22, 26, 29, 33, 37, 34, 30] },
+    { name: 'Press-01', meta: 'Roof', value: 101, unit: ' kPa', sparkline: [10, 12, 13, 15, 14, 13, 12] },
+    { name: 'CO2-03', meta: 'Office', value: 398, unit: ' ppm', sparkline: [20, 23, 27, 30, 32, 29, 28] },
     { name: 'Humid-02', meta: 'Floor 3', value: 61, unit: '%', sparkline: [28, 30, 33, 36, 38, 35, 34] },
     { name: 'Temp-03', meta: 'Hallway', value: 70, unit: '°F', sparkline: [12, 14, 17, 19, 21, 18, 16] },
   ],
@@ -51,80 +70,66 @@ const sensors: Record<
 };
 
 ModuleRegistry.registerModules([AllCommunityModule]);
-function StaticBars({ data }: { data: (number | null)[] }) {
-  const chartData = data
-    .map((value, i) => (value == null ? null : { time: i + 1, value }))
-    .filter((item): item is { time: number; value: number } => item !== null);
 
-  if (!chartData.length) return <span className="text-muted-foreground text-sm">—</span>;
+function StaticBars({ data }: { data: (number | null)[] }) {
+  const initial = data.filter((v): v is number => v !== null);
+  const [vals, setVals] = useState(initial);
+
+  useEffect(() => { //complicated, because I generate random data
+    if (!initial.length) return;
+    const t = setTimeout(
+      () => {
+        const id = setInterval(() => {
+          setVals(prev => {
+            const last = prev.at(-1)!;
+            const next = Math.max(1, last + rand(-5, 5));
+            return [...prev.slice(1), next];
+          });
+        }, 500);
+        return () => clearInterval(id);
+      },
+      rand(0, 500),
+    );
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!vals.length) return <span className="text-muted-foreground text-sm">—</span>;
 
   //prettier-ignore
+  const chartData = vals.map((value, i) => ({ time: i + 1, value }));
+  //prettier-ignore
   const options: AgCartesianChartOptions = {
-    width: 48,
-    height: 16,
+    width: 48, height: 16,
     data: chartData,
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
-    background: { fill: "transparent" },
+    background: { fill: 'transparent' },
     legend: { enabled: false },
-    axes: { x : { type: 'time', label: {enabled: false}}, y: { type: 'number',label: {enabled: false}, gridLine: {enabled: false}, line: {enabled: false}}},
-    series: [
-      {
-        type: "bar",
-        xKey: "time",
-        yKey: "value",
-        itemStyler: ({datum}) => ({
-          fill: datum.value <= 10 ? "oklch(0.704 0.191 22.216)" : "#9ca3af",
-        })
-      },
-    ],
+    axes: { x: { type: 'time', label: { enabled: false } }, y: { type: 'number', label: { enabled: false }, gridLine: { enabled: false }, line: { enabled: false } } },
+    series: [{ type: 'bar', xKey: 'time', yKey: 'value', itemStyler: ({ datum }) => ({ fill: datum.value <= 10 ? 'oklch(0.704 0.191 22.216)' : '#9ca3af' }) }],
   };
-
-  return (
-    <div className="">
-      <AgCharts options={options} />
-    </div>
-  );
+  return <AgCharts options={options} />;
 }
 
-type RealTimePinBarsProps = SensorChannel & { host: string };
+//prettier-ignore
+function PinBarsChart({ pins }: { pins: Pins }) {
+  const options: AgCartesianChartOptions = {
+    width: 48, height: 16,
+    data: pins,
+    padding: { top: 0, right: 0, bottom: 0, left: 0 },
+    dataIdKey: 'pin',
+    background: { fill: 'transparent' },
+    legend: { enabled: false },
+    axes: { x: { type: 'category', label: { enabled: false } }, y: { type: 'number', label: { enabled: false }, gridLine: { enabled: false }, line: { enabled: false } } },
+    series: [{ type: 'bar', xKey: 'pin', yKey: 'value', yName: 'resistance kOhm', tooltip: { renderer: ({ datum }) => `${datum.pin}: ${datum.value} kOhm` }, itemStyler: ({ datum }) => ({ fill: datum.value <= 10 ? 'oklch(0.704 0.191 22.216)' : '#9ca3af' }) }],
+  };
+  return <AgCharts options={options} />;
+}
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
   const event = useWebSocket<SensorReadingEvent>(`ws://${host}?channel=${toMqttTopic(channel)}`);
   const pins = event?.pins ?? [];
-
   if (!pins.length) return <span className="text-muted-foreground text-sm">…</span>;
-
-  //prettier-ignore
-  const options: AgCartesianChartOptions = {
-    width: 48,
-    height: 16,
-    data: pins,
-    padding: { top: 0, right: 0, bottom: 0, left: 0 },
-    dataIdKey: 'pin',
-    background: { fill: "transparent" },
-    legend: { enabled: false },
-    axes: { x : { type: 'category', label: {enabled: false}}, y: { type: 'number', label: {enabled: false}, gridLine: {enabled: false}, line: {enabled: false}}},
-    series: [
-      {
-        type: "bar",
-        xKey: "pin",
-        yKey: "value",
-        yName: 'resistance kOhm',
-        tooltip: {
-          renderer: ({datum}) => `${datum.pin}: ${datum.value} kOhm`
-        },
-        itemStyler: ({datum}) => ({
-          fill: datum.value <= 10 ? "oklch(0.704 0.191 22.216)" : "#9ca3af",
-        })
-      },
-    ],
-  };
-
-  return (
-    <div className="">
-      <AgCharts options={options} />
-    </div>
-  );
+  return <PinBarsChart pins={pins} />;
 }
 
 function SensorStatusCard({
@@ -151,7 +156,6 @@ function SensorStatusCard({
         minWidth: 0,
       }}
     >
-      {/* dot + label + chevron, number below */}
       <div className="mb-3 flex flex-col">
         <div className="mb-1 flex items-center gap-1.5">
           <span className={`size-3 shrink-0 rounded-full ${dot}`} />
@@ -176,10 +180,8 @@ function SensorStatusCard({
         <span className="text-5xl leading-none font-bold">{list.length}</span>
       </div>
 
-      {/* Divider */}
       <Separator className="mb-4" />
 
-      {/* Sensor list — always shown, fixed height, scrollable */}
       <ScrollArea className="relative h-28" type="always">
         {list.map(s => (
           <div key={s.name} className="flex shrink-0 items-center justify-between gap-2 py-1.5 pr-4">
@@ -201,7 +203,6 @@ function SensorStatusCard({
           </div>
         ))}
 
-        {/* Subtle fade */}
         <div className="pointer-events-none absolute right-0 bottom-0 left-0 transition-opacity duration-200">
           <div className="to-card h-3.5 w-full bg-linear-to-b from-transparent" />
         </div>
