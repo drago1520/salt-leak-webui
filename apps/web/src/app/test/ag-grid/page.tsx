@@ -2,8 +2,8 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Grid from './ag-grid-table';
-import { db } from 'db';
-import { sensorReadings } from 'db/drizzle-kit/schema';
+import { sensorReadings } from '@repo/db/drizzle-kit/schema';
+import { db } from '@repo/db';
 
 export default async function Page() {
   const res = await auth.api.getSession({

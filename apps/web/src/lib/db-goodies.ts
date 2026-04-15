@@ -1,4 +1,4 @@
-import { sensorReadings } from 'db/drizzle-kit/schema';
+import { sensorReadings } from '@repo/db/drizzle-kit/schema';
 import type { AppRouter } from '@/server/root';
 import type { TRPCClientErrorLike } from '@trpc/client';
 import { getTableColumns } from 'drizzle-orm';
