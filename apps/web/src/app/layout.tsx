@@ -47,7 +47,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/opengraph-image',
+        url: '/banner.jpg',
+        width: 1200,
+        height: 630,
         alt: `${siteName} logo`,
       },
     ],
@@ -56,7 +58,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: siteTitle,
     description: siteDescription,
-    images: ['/twitter-image'],
+    images: ['/banner.jpg'],
   },
 };
 
