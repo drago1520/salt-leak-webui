@@ -1,5 +1,5 @@
 {
-  "name": "@ca/salt-leak-sensor",
+  "name": "ca/salt-leak-sensor",
   "type": "module",
   "private": true,
   "scripts": {
@@ -20,6 +20,6 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@ca/ts-config": "workspace:*"
+    "ca/ts-config": "workspace:*"
   }
 }

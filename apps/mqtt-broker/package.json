@@ -1,5 +1,5 @@
 {
-  "name": "@ca/mqtt-broker",
+  "name": "ca/mqtt-broker",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -7,14 +7,14 @@
     "start": "bun index.ts"
   },
   "devDependencies": {
-    "@ca/ts-config": "workspace:*"
+    "ca/ts-config": "workspace:*"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@ca/db": "workspace:*",
-    "@ca/shared": "workspace:*",
+    "ca/db": "workspace:*",
+    "ca/shared": "workspace:*",
     "aedes": "^1.0.2",
     "dotenv": "^17.4.2"
   }

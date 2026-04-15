@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { useState, useEffect } from 'react';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
-import { SensorReadingEvent } from '@ca/shared/sensor-events-SSE.ts';
-import { type SensorChannel, toMqttTopic } from '@ca/shared/sensor-channel.ts';
+import { SensorReadingEvent } from 'ca/shared/sensor-events-SSE.ts';
+import { type SensorChannel, toMqttTopic } from 'ca/shared/sensor-channel.ts';
 
 const config = {
   active: { label: 'Active', dot: 'bg-success' },
@@ -75,7 +75,8 @@ function StaticBars({ data }: { data: (number | null)[] }) {
   const initial = data.filter((v): v is number => v !== null);
   const [vals, setVals] = useState(initial);
 
-  useEffect(() => { //complicated, because I generate random data
+  useEffect(() => {
+    //complicated, because I generate random data
     if (!initial.length) return;
     const t = setTimeout(
       () => {
@@ -126,7 +127,9 @@ function PinBarsChart({ pins }: { pins: Pins }) {
 }
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
-  const event = useWebSocket<SensorReadingEvent>(`ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_WS_SECRET}`);
+  const event = useWebSocket<SensorReadingEvent>(
+    `ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_WS_SECRET}`,
+  );
   const pins = event?.pins ?? [];
   if (!pins.length) return <span className="text-muted-foreground text-sm">…</span>;
   return <PinBarsChart pins={pins} />;

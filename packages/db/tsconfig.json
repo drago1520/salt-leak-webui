@@ -22,9 +22,9 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
+    "noPropertyAccessFromIndexSignature": false
   },
-  "extends": "@ca/ts-config/tsconfig.base.json"
+  "extends": "ca/ts-config/tsconfig.base.json"
 }
 
 // {

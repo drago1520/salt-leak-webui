@@ -1,5 +1,5 @@
 {
-  "name": "@ca/ts-config",
+  "name": "ca/ts-config",
   "exports": {
     "./*": "./*"
   },

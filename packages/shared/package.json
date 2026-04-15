@@ -1,5 +1,5 @@
 {
-  "name": "@ca/shared",
+  "name": "ca/shared",
   "module": "./src/index.ts",
   "exports": {
     "./*": "./src/*"
@@ -7,14 +7,14 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@ca/ts-config": "workspace:*",
+    "ca/ts-config": "workspace:*",
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@ca/db": "workspace:*",
+    "ca/db": "workspace:*",
     "zod": "^4.3.6"
   }
 }
