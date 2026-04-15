@@ -28,8 +28,8 @@ const intervalMs = Math.max(1, Math.round(1000 / TCP_SEND_Hz));
 
 setInterval(() => {
   const presetIndex = Math.random() < (FAIL_CHANCE / 100)
-    ? Math.trunc(Math.random() * 3)
-    : Math.trunc(Math.random() * (16 - 3) + 3);
+    ? Math.trunc(Math.random() * (16 - 3) + 3)
+    : Math.trunc(Math.random() * 3);
 
   const sensorOutput = simulateSensorOutput(presets[presetIndex]);
   const payload = `${sensorOutput}${SERIAL_DELIMITER}`;
