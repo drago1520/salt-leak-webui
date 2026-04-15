@@ -13,14 +13,24 @@ const env = z.object({
   DATABASE_URL: z.string().min(1),
   MQTT_PORT: z.coerce.number().int().positive().default(1883),
   WS_PORT: z.coerce.number().int().positive().default(4000),
+  MQTT_USERNAME: z.string().min(1),
+  MQTT_PASSWORD: z.string().min(1),
+  WS_SECRET: z.string().min(1),
 }).parse(process.env);
 
 const broker = await Aedes.createBroker();
 
+broker.authenticate = (_client, username, password, done) => {
+  const ok = username === env.MQTT_USERNAME && password?.toString() === env.MQTT_PASSWORD;
+  done(null, ok);
+};
+
 const wsServer = Bun.serve<{ channel: string }>({
   port: env.WS_PORT,
   fetch(req, server) {
-    const channel = new URL(req.url).searchParams.get('channel') ?? '#';
+    const url = new URL(req.url);
+    if (url.searchParams.get('key') !== env.WS_SECRET) return new Response('unauthorized', { status: 401 });
+    const channel = url.searchParams.get('channel') ?? '#';
     if (server.upgrade(req, { data: { channel } })) return;
     return new Response('not found', { status: 404 });
   },

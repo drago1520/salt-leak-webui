@@ -1,9 +1,9 @@
 import mqtt from 'mqtt';
 import { sensorChannelSchema, toMqttTopic } from '@ca/shared/sensor-channel.ts';
-import { BROKER_URL, COMPANY_ID, LOCATION_ID, DATACENTER_ID, MACHINE_ID } from './env-schema.ts';
+import { BROKER_URL, MQTT_USERNAME, MQTT_PASSWORD, COMPANY_ID, LOCATION_ID, DATACENTER_ID, MACHINE_ID } from './env-schema.ts';
 
 const channel = sensorChannelSchema.parse({ companyId: COMPANY_ID, locationId: LOCATION_ID, sensorType: 'salt-leak', datacenterId: DATACENTER_ID, machineId: MACHINE_ID });
-const client = mqtt.connect(BROKER_URL, { protocolVersion: 4, reconnectPeriod: 3000 });
+const client = mqtt.connect(BROKER_URL, { protocolVersion: 4, reconnectPeriod: 3000, username: MQTT_USERNAME, password: MQTT_PASSWORD });
 
 client.on('connect', () => console.log('MQTT connected'));
 client.on('reconnect', () => console.log('MQTT reconnecting...'));

@@ -11,7 +11,7 @@ To install dependencies:
 1. Clone repo
 2. Install dependencies
 ```bash
-npm install
+bun install
 ```
 3. Configure enviroment variables
 ```bash
@@ -21,6 +21,12 @@ cp .env.example .env
 4. Run COM listener:
 
 ```bash
-npm run listen
+bun listen
 ```
+
+---
+
+## Auth
+
+MQTT connection requires credentials matching the broker's `MQTT_USERNAME` / `MQTT_PASSWORD`. Set both in `.env` — see `.env.example`.
 

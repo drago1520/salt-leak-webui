@@ -126,7 +126,7 @@ function PinBarsChart({ pins }: { pins: Pins }) {
 }
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
-  const event = useWebSocket<SensorReadingEvent>(`ws://${host}?channel=${toMqttTopic(channel)}`);
+  const event = useWebSocket<SensorReadingEvent>(`ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_WS_SECRET}`);
   const pins = event?.pins ?? [];
   if (!pins.length) return <span className="text-muted-foreground text-sm">…</span>;
   return <PinBarsChart pins={pins} />;
