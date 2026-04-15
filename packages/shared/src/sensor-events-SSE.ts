@@ -4,6 +4,9 @@ type Pins = Pick<SelectSensorReadings, 'p1Ohms' | 'p2Ohms' | 'p3Ohms' | 'p4Ohms'
 
 export type SensorReadingEvent = {
   id: SelectSensorReadings['id']
+  companyId: string
+  locationId: string
+  sensorType: string
   pins: { pin: keyof Pins; value: number }[]
   datacenterId: number
   machineId: number

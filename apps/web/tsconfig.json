@@ -42,5 +42,6 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "extends": "@ca/ts-config/tsconfig.base.json"
 }

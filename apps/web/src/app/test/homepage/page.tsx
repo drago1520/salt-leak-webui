@@ -2,9 +2,10 @@
 import { AgCharts } from 'ag-charts-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
-import { SensorReadingEvent } from '@/server/services/sensor-ingestion/sensor-events-SSE';
+import { SensorReadingEvent } from '@ca/shared/sensor-events-SSE.ts';
+import { type SensorChannel, toMqttTopic } from '@ca/shared/sensor-channel.ts';
 
 const config = {
   active: { label: 'Active', dot: 'bg-success' },
@@ -83,22 +84,25 @@ function StaticBars({ data }: { data: (number | null)[] }) {
   );
 }
 
-function RealTimePinBars({data}: {data?: SensorReadingEvent[]}) {
-  // if (!data?.length) return <span className="text-muted-foreground text-sm">—</span>;
-  const initialData: SensorReadingEvent['pins'] = [
-    { pin: 'p1Ohms', value: 20 },
-    { pin: 'p2Ohms', value: 2 },
-    { pin: 'p3Ohms', value: 5 },
-    { pin: 'p4Ohms', value: 30 },
-    { pin: 'p5Ohms', value: 21 },
-    { pin: 'p6Ohms', value: 23 },
-  ];
+type RealTimePinBarsProps = SensorChannel & { host: string };
+
+function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
+  const [pins, setPins] = useState<SensorReadingEvent['pins']>([]);
+
+  useEffect(() => {
+    const ws = new WebSocket(`ws://${host}?channel=${toMqttTopic(channel)}`);
+    ws.onmessage = (e) => {
+      const event: SensorReadingEvent = JSON.parse(e.data as string);
+      setPins(event.pins);
+    };
+    return () => ws.close();
+  }, [host, channel.companyId, channel.locationId, channel.sensorType, channel.datacenterId, channel.machineId]);
+
   //prettier-ignore
   const options: AgCartesianChartOptions = {
     width: 480,
     height: 160,
-    // data,
-    data: initialData,
+    data: pins,
     padding: { top: 0, right: 0, bottom: 0, left: 0 },
     dataIdKey: 'pin',
     background: { fill: "transparent" },
@@ -217,7 +221,7 @@ export default function SensorStatusCards() {
 
   return (
     <div className="w-full rounded-2xl font-mono">
-      <RealTimePinBars />
+      <RealTimePinBars host="localhost:4000" companyId="CA" locationId="room-a" sensorType="salt-leak" datacenterId={1} machineId={0} />
       <div className="mb-3 flex items-center justify-between">
         <span className="text-muted-foreground text-sm">Sensors</span>
         <span className="text-muted-foreground text-sm">{total} total</span>

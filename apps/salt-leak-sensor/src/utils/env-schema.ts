@@ -3,6 +3,8 @@ import { z } from "zod";
 
 export const envSchema = z.object({
   BROKER_URL: z.string().min(1, 'BROKER_URL is missing. The sensor has nowhere to send data. Use mqtt://host:1883'),
+  COMPANY_ID: z.string().min(1, 'COMPANY_ID is missing.'),
+  LOCATION_ID: z.string().min(1, 'LOCATION_ID is missing.'),
   DATACENTER_ID: z.coerce
     .number()
     .refine(
@@ -61,6 +63,8 @@ if(!ENV) throw new Error('env broken')
 
 export const {
   BROKER_URL,
+  COMPANY_ID,
+  LOCATION_ID,
   DATACENTER_ID,
   MACHINE_ID,
   SERIAL_PORT_LISTEN,
