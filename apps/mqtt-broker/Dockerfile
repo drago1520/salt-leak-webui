@@ -11,7 +11,6 @@ RUN turbo prune @repo/mqtt-broker --docker
 FROM base AS installer
 WORKDIR /app
 COPY --from=pruner /app/out/json/ .
-COPY --from=pruner /app/out/full/bun.lock ./bun.lock
 RUN bun install
 
 # Copy full source
