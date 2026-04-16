@@ -1,5 +1,5 @@
 {
-  "name": "@repo",
+  "name": "@repo/ca",
   "module": "index.ts",
   "type": "module",
   "private": true,
