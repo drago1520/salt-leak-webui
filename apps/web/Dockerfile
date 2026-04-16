@@ -1,30 +1,32 @@
 FROM oven/bun:1.3.12-alpine AS base
+RUN bun install -g turbo
 WORKDIR /app
 
-# Copy workspace manifests for dependency resolution
-COPY package.json bun.lock ./
-COPY packages/ts-config/package.json    ./packages/ts-config/package.json
-COPY packages/shared/package.json       ./packages/shared/package.json
-COPY packages/db/package.json           ./packages/db/package.json
-COPY apps/mqtt-broker/package.json      ./apps/mqtt-broker/package.json
-COPY apps/salt-leak-sensor/package.json ./apps/salt-leak-sensor/package.json
-COPY apps/web/package.json              ./apps/web/package.json
+# Prune workspace for @repo/web
+FROM base AS pruner
+COPY . .
+RUN turbo prune @repo/web --docker
 
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile
+# Install deps from pruned lockfile
+FROM base AS installer
+WORKDIR /app
+COPY --from=pruner /app/out/json/ .
+RUN bun install
 
-# Copy source
-COPY packages/ts-config/ ./packages/ts-config/
-COPY packages/shared/src/ ./packages/shared/src/
-COPY packages/db/src/     ./packages/db/src/
-COPY apps/web/             ./apps/web/
-
-WORKDIR /app/apps/web
-
+# Build with full source
+FROM installer AS builder
+COPY --from=pruner /app/out/full/ .
 ENV NODE_ENV=production
+RUN turbo run build --filter=@repo/web
 
-RUN bun run build
-
+# Trimmed runner
+FROM oven/bun:1.3.12-alpine AS runner
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+WORKDIR /app/apps/web
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
+USER nextjs
+ENV NODE_ENV=production
 EXPOSE 3000
-
-CMD ["bun", "run", "start"]
+CMD ["node", "server.js"]
