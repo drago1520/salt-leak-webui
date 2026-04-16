@@ -16,6 +16,7 @@ RUN bun install
 # Build with full source
 FROM installer AS builder
 COPY --from=pruner /app/out/full/ .
+ARG DB_URL BETTER_AUTH_SECRET BETTER_AUTH_URL GITHUB_CLIENT_ID GITHUB_CLIENT_SECRET NEXT_PUBLIC_WS_URL NEXT_PUBLIC_WS_SECRET
 ENV NODE_ENV=production
 RUN turbo run build --filter=@repo/web
 
