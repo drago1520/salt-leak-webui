@@ -29,5 +29,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 USER nextjs
 ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
 EXPOSE 3000
 CMD ["node", "apps/web/server.js"]
