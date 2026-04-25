@@ -1,15 +1,34 @@
 import { relations } from "drizzle-orm/relations";
-import { sensorReadings, notifications, user, webPushSubscriptions, session, account } from "./schema";
+import { sensorReadings, notifications, notificationRecipients, user, webPushSubscriptions, session, account } from "./schema";
 
-export const notificationsRelations = relations(notifications, ({one}) => ({
+export const notificationsRelations = relations(notifications, ({one, many}) => ({
 	sensorReading: one(sensorReadings, {
 		fields: [notifications.id],
 		references: [sensorReadings.id]
 	}),
+	notificationRecipients: many(notificationRecipients),
 }));
 
 export const sensorReadingsRelations = relations(sensorReadings, ({many}) => ({
 	notifications: many(notifications),
+}));
+
+export const notificationRecipientsRelations = relations(notificationRecipients, ({one}) => ({
+	notification: one(notifications, {
+		fields: [notificationRecipients.notificationId],
+		references: [notifications.id]
+	}),
+	user: one(user, {
+		fields: [notificationRecipients.userId],
+		references: [user.id]
+	}),
+}));
+
+export const userRelations = relations(user, ({many}) => ({
+	notificationRecipients: many(notificationRecipients),
+	webPushSubscriptions: many(webPushSubscriptions),
+	sessions: many(session),
+	accounts: many(account),
 }));
 
 export const webPushSubscriptionsRelations = relations(webPushSubscriptions, ({one}) => ({
@@ -17,12 +36,6 @@ export const webPushSubscriptionsRelations = relations(webPushSubscriptions, ({o
 		fields: [webPushSubscriptions.userId],
 		references: [user.id]
 	}),
-}));
-
-export const userRelations = relations(user, ({many}) => ({
-	webPushSubscriptions: many(webPushSubscriptions),
-	sessions: many(session),
-	accounts: many(account),
 }));
 
 export const sessionRelations = relations(session, ({one}) => ({

@@ -1,6 +1,6 @@
 import { db } from '@repo/db';
-import { webPushSubscriptions } from '@repo/db/drizzle-kit/schema';
-import { and, eq } from 'drizzle-orm';
+import { notificationRecipients, notifications, webPushSubscriptions } from '@repo/db/drizzle-kit/schema';
+import { and, count, eq, isNull } from 'drizzle-orm';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/trpc';
 import { agGridQuery } from './services/ag-grid';
 import z from 'zod';
@@ -60,6 +60,48 @@ const webPushRouter = createTRPCRouter({
     }),
 });
 
-export const appRouter = createTRPCRouter({ hello, helloAuthed, agGridQuery, push: webPushRouter });
+const notificationsRouter = createTRPCRouter({
+  unreadCount: protectedProcedure.query(async ({ ctx }) => {
+    const [row] = await db.select({ count: count() }).from(notificationRecipients)
+      .where(and(eq(notificationRecipients.userId, ctx.session.user.id), isNull(notificationRecipients.readAt)));
+    return row!.count;
+  }),
+
+  list: protectedProcedure.query(async ({ ctx }) => {
+    return db
+      .select()
+      .from(notifications)
+      .innerJoin(notificationRecipients, and(
+        eq(notificationRecipients.notificationId, notifications.id),
+        eq(notificationRecipients.userId, ctx.session.user.id),
+      ));
+  }),
+
+  markRead: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      await db
+        .update(notificationRecipients)
+        .set({ readAt: new Date().toISOString() })
+        .where(and(eq(notificationRecipients.notificationId, BigInt(input.id)), eq(notificationRecipients.userId, ctx.session.user.id)));
+    }),
+
+  markAllRead: protectedProcedure.mutation(async ({ ctx }) => {
+    await db
+      .update(notificationRecipients)
+      .set({ readAt: new Date().toISOString() })
+      .where(and(eq(notificationRecipients.userId, ctx.session.user.id), isNull(notificationRecipients.readAt)));
+  }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      await db.delete(notificationRecipients).where(
+        and(eq(notificationRecipients.notificationId, BigInt(input.id)), eq(notificationRecipients.userId, ctx.session.user.id)),
+      );
+    }),
+});
+
+export const appRouter = createTRPCRouter({ hello, helloAuthed, agGridQuery, push: webPushRouter, notifications: notificationsRouter });
 
 export type AppRouter = typeof appRouter;
