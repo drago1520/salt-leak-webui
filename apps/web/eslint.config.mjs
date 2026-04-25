@@ -4,7 +4,6 @@ import nextTs from 'eslint-config-next/typescript';
 import drizzle from 'eslint-plugin-drizzle';
 import reactCompiler from 'eslint-plugin-react-compiler';
 import reactYouMightNotNeedAnEffect from 'eslint-plugin-react-you-might-not-need-an-effect';
-import eslintJS from '@eslint/js';
 import reactHooks from 'eslint-plugin-react-hooks';
 import js from '@eslint/js';
 import depend from 'eslint-plugin-depend';
@@ -12,10 +11,9 @@ import depend from 'eslint-plugin-depend';
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  ...js.configs.recommended,
+  js.configs.recommended,
   reactCompiler.configs.recommended,
   reactYouMightNotNeedAnEffect.configs.recommended,
-  eslintJS.configs.recommended,
   reactHooks.configs.flat.recommended,
   {
     plugins: {
