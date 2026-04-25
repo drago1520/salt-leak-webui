@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/lib/trpc-client';
+import { toast } from 'sonner';
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
 
@@ -16,7 +17,15 @@ export default function Page() {
     setSubs(await trpc.push.list.query());
   }
 
-  useEffect(() => { fetchSubs(); }, []);
+  useEffect(() => {
+    fetchSubs();
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL}?token=${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_TOKEN}`);
+    ws.onmessage = (e) => {
+      const { message } = JSON.parse(e.data);
+      toast.error(message);
+    };
+    return () => ws.close();
+  }, []);
 
   async function subscribe() {
     const isBrave = 'brave' in navigator;
@@ -54,6 +63,7 @@ export default function Page() {
         </p>
       )}
       <Button onClick={subscribe}>Subscribe</Button>
+      <Button onClick={() => toast.error('Wtf is up doog')}>Test toast</Button>
       <ul>
         {subs.map((s) => (
           <li key={s.id}>

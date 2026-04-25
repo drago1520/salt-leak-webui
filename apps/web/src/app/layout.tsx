@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Toaster } from "@/components/ui/sonner"
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -77,6 +78,7 @@ export default function RootLayout({
         <body className="flex min-h-full flex-col">
           <TooltipProvider>{children}</TooltipProvider>
           {process.env.NODE_ENV == 'development' && <ThemeToggle />}
+          <Toaster richColors position='top-center' />
         </body>
       </ThemeProvider>
     </html>

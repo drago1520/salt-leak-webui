@@ -11,6 +11,21 @@ const VAPID_PRIVATE_KEY = JSON.parse(process.env.VAPID_PRIVATE_KEY!),
   COOLDOWN_MS = Number(process.env.COOLDOWN_MS ?? 30_000),
   lastAlertAt = new Map<string, number>();
 
+const wsServer = Bun.serve({
+  port: Number(process.env.WS_PORT ?? 4001),
+  fetch(req, server) {
+    const { searchParams } = new URL(req.url);
+    if (searchParams.get("token") !== process.env.WS_TOKEN)
+      return new Response("unauthorized", { status: 401 });
+    if (server.upgrade(req)) return;
+    return new Response("not found", { status: 404 });
+  },
+  websocket: {
+    open(ws) { ws.subscribe("alerts"); },
+    message() {},
+  },
+});
+
 async function sendPushToAll(title: string, body: string) {
   const subs = await db.select().from(webPushSubscriptions);
   const t = performance.now();
@@ -68,14 +83,10 @@ client.on("message", async (_topic, payload) => {
   if (now - (lastAlertAt.get(sensorId) ?? 0) < COOLDOWN_MS) return;
 
   lastAlertAt.set(sensorId, now);
-  await db.insert(notifications).values({
-    id,
-    message: `Sensor ${sensorId} leaking on reading ${id}`,
-  });
-  await sendPushToAll(
-    "Sensor Alert",
-    `Sensor ${sensorId} leaking (reading ${id})`,
-  );
+  const message = `Sensor ${sensorId} leaking on reading ${id}`;
+  await db.insert(notifications).values({ id, message });
+  wsServer.publish("alerts", JSON.stringify({ sensorId, readingId: id.toString(), message }));
+  await sendPushToAll("Sensor Alert", message);
   console.log(`Alert sent for sensor ${sensorId}, reading ${id}`);
 });
 
