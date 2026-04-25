@@ -1,8 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { DATACENTER_ID, MACHINE_ID } from "../utils/env-schema.ts";
-import { generateID } from "../utils/generate-id.ts";
 import { simulateSensorOutput } from "../utils/simulate-sensor-output.ts";
-import { sensorOutputSchema } from "../utils/sensor-output-schema.ts";
+import { sensorOutputSchema } from "@repo/shared/sensor-output-schema.js";
+import { generateID } from "@repo/shared/generate-id.js";
 
 const RECORD_COUNT = Number(process.argv[2] ?? 10_500_000);
 const OUTPUT_PATH = process.argv[3] ?? `sensor-output-${RECORD_COUNT}.csv`;
@@ -15,7 +15,7 @@ const csv =
     const preset: "lower" | "higher" = Math.random() < 0.5 ? "lower" : "higher";
     const rawLine = simulateSensorOutput(preset);
     const parsed = sensorOutputSchema.parse(rawLine);
-    const id = generateID().toString();
+    const id = generateID(0, 0).toString();
     const receivedAt = formatTimestamp(new Date());
 
     return [

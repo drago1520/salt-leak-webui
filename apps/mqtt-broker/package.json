@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun index.ts"
+    "start": "bun index.ts",
+    "dev": "bun --watch index.ts"
   },
   "devDependencies": {
     "@repo/ts-config": "workspace:*"

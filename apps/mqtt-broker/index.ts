@@ -104,7 +104,9 @@ broker.on(
       );
       await db
         .insert(sensorReadings)
-        .values({ id, datacenterId, machineId, ...reading });
+        .values({ id, datacenterId, machineId, ...reading, boxStatusCode: BigInt(reading.boxStatusCode) });
+
+      broker.publish({ ...packet, topic: 'readings', payload: Buffer.from(JSON.stringify({ id: id.toString(), ...reading })) }, () => {});
     } catch (error) {
       console.error(
         "publish failed:",

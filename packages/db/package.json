@@ -22,5 +22,9 @@
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "pg": "^8.20.0"
+  },
+  "scripts": {
+    "pull": "bunx drizzle-kit pull && bun scripts/fix-bigint.ts",
+    "push": "bunx drizzle-kit push"
   }
 }
