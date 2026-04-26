@@ -1,11 +1,11 @@
 FROM oven/bun:1.3.12-alpine AS base
 WORKDIR /app
 
-# Prune workspace for @repo/mqtt-broker
+# Prune workspace for @repo/notifications
 FROM base AS pruner
 RUN bun install -g turbo
 COPY . .
-RUN turbo prune @repo/mqtt-broker --docker
+RUN turbo prune @repo/notifications --docker
 
 # Install deps from pruned lockfile
 FROM base AS installer
@@ -18,7 +18,6 @@ FROM installer AS runner
 COPY --from=pruner /app/out/full/ .
 ENV NODE_ENV=production
 
-EXPOSE 1883
-EXPOSE 4000
-WORKDIR /app/apps/mqtt-broker
-CMD ["bun", "index.ts"]
+EXPOSE 4001
+WORKDIR /app/apps/notifications
+CMD ["bun", "--preload", "./instrument.ts", "index.ts"]

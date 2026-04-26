@@ -10,7 +10,7 @@ RUN turbo prune @repo/salt-leak-sensor --docker
 # Install deps with bun (project uses bun.lock)
 FROM base AS installer
 COPY --from=pruner /app/out/json/ .
-RUN bun install
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install
 
 # Runtime
 FROM node:25.9.0-alpine AS runner

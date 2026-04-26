@@ -14,11 +14,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Environment variables (only commit template files)
-**/.env
-**/.env*.local
-**/.env.development
-**/.env.test
-**/.env.production.local
+**/.env*
 
 # Next.js build outputs (always generated during `next build`)
 **/.next/
