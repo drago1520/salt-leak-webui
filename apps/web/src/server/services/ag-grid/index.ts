@@ -1,8 +1,9 @@
 import { protectedProcedure } from '@/server/trpc';
-import postgresService from './postgres-service';
+import sensorReadingsAgGrid, { notificationsAgGrid, archivedNotificationsAgGrid } from './ag-grid-infinite-row-model-backend';
 import { agGridQuerySchema } from './schema';
 
-export const agGridQuery = protectedProcedure.input(agGridQuerySchema).query(async ({ input, ctx }) => {
-  const res = await postgresService.getData(input);
-  return res;
-});
+export const agGridSensorReadingsQuery = protectedProcedure.input(agGridQuerySchema).query(({ input }) => sensorReadingsAgGrid.getData(input));
+
+export const agGridNotificationsQuery = protectedProcedure.input(agGridQuerySchema).query(({ input }) => notificationsAgGrid.getData(input));
+
+export const agGridArchivedNotificationsQuery = protectedProcedure.input(agGridQuerySchema).query(({ input }) => archivedNotificationsAgGrid.getData(input));

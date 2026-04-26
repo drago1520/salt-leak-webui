@@ -4,7 +4,6 @@ import nextTs from 'eslint-config-next/typescript';
 import drizzle from 'eslint-plugin-drizzle';
 import reactCompiler from 'eslint-plugin-react-compiler';
 import reactYouMightNotNeedAnEffect from 'eslint-plugin-react-you-might-not-need-an-effect';
-import reactHooks from 'eslint-plugin-react-hooks';
 import js from '@eslint/js';
 import depend from 'eslint-plugin-depend';
 
@@ -14,7 +13,6 @@ const eslintConfig = defineConfig([
   js.configs.recommended,
   reactCompiler.configs.recommended,
   reactYouMightNotNeedAnEffect.configs.recommended,
-  reactHooks.configs.flat.recommended,
   {
     plugins: {
       drizzle,
@@ -24,6 +22,8 @@ const eslintConfig = defineConfig([
       'drizzle/enforce-delete-with-where': 'warn',
       'drizzle/enforce-update-with-where': 'warn',
       'react/no-unescaped-entities': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'no-undef': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'no-unused-vars': 'warn',
     },

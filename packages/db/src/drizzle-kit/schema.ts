@@ -1,4 +1,4 @@
-import { pgTable, index, bigint, timestamp, text, doublePrecision, integer, foreignKey, serial, unique, boolean } from "drizzle-orm/pg-core"
+import { pgTable, index, bigint, timestamp, text, doublePrecision, integer, foreignKey, unique, serial, boolean } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -25,8 +25,10 @@ export const sensorReadings = pgTable("sensor_readings", {
 	boxStatusCode: bigint("box_status_code", { mode: "bigint" }).notNull(),
 	datacenterId: integer("datacenter_id").notNull(),
 	machineId: integer("machine_id").notNull(),
-}, (table) => [
+}, (table) => [ //IMPORTANT: after every push, do pull. Index order matters 
 	index("sensor_readings_box_status_alert_idx").using("btree", table.boxStatusCode.asc().nullsLast().op("int8_ops")).where(sql`(box_status_code <> 0)`),
+	index("sensor_readings_datacenter_id_id_idx").using("btree", table.datacenterId.asc().nullsLast().op("int8_ops"), table.id.asc().nullsLast().op("int4_ops")),
+	index("sensor_readings_machine_id_id_idx").using("btree", table.machineId.asc().nullsLast().op("int4_ops"), table.id.asc().nullsLast().op("int8_ops")),
 	index("sensor_readings_p1_low_ohms_idx").using("btree", table.p1Ohms.asc().nullsLast().op("float8_ops")).where(sql`(p1_ohms < (10)::double precision)`),
 	index("sensor_readings_p1_status_alert_idx").using("btree", table.p1StatusCode.asc().nullsLast().op("int4_ops")).where(sql`(p1_status_code <> 0)`),
 	index("sensor_readings_p2_low_ohms_idx").using("btree", table.p2Ohms.asc().nullsLast().op("float8_ops")).where(sql`(p2_ohms < (10)::double precision)`),
@@ -46,31 +48,13 @@ export const notifications = pgTable("notifications", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	id: bigint({ mode: "bigint" }).primaryKey().notNull(),
 	message: text().notNull(),
+	archivedAt: timestamp("archived_at", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
 			columns: [table.id],
 			foreignColumns: [sensorReadings.id],
 			name: "notifications_id_sensor_readings_id_fk"
 		}),
-]);
-
-export const notificationRecipients = pgTable("notification_recipients", {
-	id: serial().primaryKey().notNull(),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	notificationId: bigint("notification_id", { mode: "bigint" }).notNull(),
-	userId: text("user_id").notNull(),
-	readAt: timestamp("read_at", { withTimezone: true, mode: 'string' }),
-}, (table) => [
-	foreignKey({
-			columns: [table.notificationId],
-			foreignColumns: [notifications.id],
-			name: "notification_recipients_notification_id_notifications_reading_i"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "notification_recipients_user_id_user_id_fk"
-		}).onDelete("cascade"),
 ]);
 
 export const webPushSubscriptions = pgTable("web_push_subscriptions", {

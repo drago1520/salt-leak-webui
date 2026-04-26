@@ -85,7 +85,7 @@ client.on("message", async (_topic, payload) => {
   lastAlertAt.set(sensorId, now);
   const message = `Sensor ${sensorId} leaking on reading ${id}`;
   await db.insert(notifications).values({ id, message });
-  wsServer.publish("alerts", JSON.stringify({ sensorId, readingId: id.toString(), message }));
+  wsServer.publish("alerts", JSON.stringify({sensorId,id: id.toString(), message }));
   await sendPushToAll("Sensor Alert", message);
   console.log(`Alert sent for sensor ${sensorId}, reading ${id}`);
 });

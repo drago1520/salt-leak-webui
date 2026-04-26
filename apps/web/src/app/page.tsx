@@ -44,7 +44,7 @@ export default async function Page() {
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
           <SensorStatusCards />
           <div className="bg-background flex-1 rounded-xl shadow">
-            <Grid rows={undefined} />
+            <Grid />
           </div>
         </div>
       </SidebarInset>

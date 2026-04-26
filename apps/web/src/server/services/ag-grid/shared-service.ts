@@ -19,18 +19,22 @@ type CombinedSimpleFilterModel =
 type SupportedFilterModel = SimpleFilterModel | CombinedSimpleFilterModel; //| SetFilterModel | IMultiFilterModel;
 
 type SqlService = {
-  getData: (request: AgGridQuery) => Promise<{ rows: unknown[]; lastRow: number | undefined }>;
-  buildSql: (request: AgGridQuery) => string;
+  getData: (request: AgGridQuery) => Promise<{ rows: unknown[]; lastRow: number }>;
   createWhereSql: (request: Pick<AgGridQuery, 'filterModel'>) => string;
   createOrderBySql: (request: Pick<AgGridQuery, 'sortModel'>) => string;
   createLimitOffsetSql: (request: Pick<AgGridQuery, 'startRow' | 'endRow'>) => string;
-  getRowCount: (request: Pick<AgGridQuery, 'startRow' | 'endRow'>, results: unknown[]) => number | undefined;
+  getLastRow: (request: Pick<AgGridQuery, 'startRow' | 'endRow'>, results: unknown[]) => number;
   cutResultsToPageSize: (request: Pick<AgGridQuery, 'startRow' | 'endRow'>, results: unknown[]) => unknown[];
 };
 
+export type QueryParts = {
+  whereSql: string;
+  orderBySql: string;
+  limitOffsetSql: string;
+};
+
 type SqlServiceConfig = {
-  query: (sql: string) => Promise<unknown[]>;
-  tableName: string;
+  query: (parts: QueryParts) => Promise<unknown[]>;
   textFilters: Record<string, (key: string, item: TextFilterModel) => string>;
   numberFilters: Record<string, (key: string, item: NumberFilterModel) => string>;
   bigintFilters: Record<string, (key: string, item: BigIntFilterModel) => string>;
@@ -40,7 +44,6 @@ type SqlServiceConfig = {
 
 export const createSqlService = ({
   query,
-  tableName,
   textFilters,
   numberFilters,
   bigintFilters,
@@ -100,50 +103,35 @@ export const createSqlService = ({
 
   const service: SqlService = {
     getData: async (request: AgGridQuery) => {
-      console.log('request :', request);
-      const sql = service.buildSql(request);
-      const results = await query(sql);
+      const parts: QueryParts = {
+        whereSql: service.createWhereSql(request),
+        orderBySql: service.createOrderBySql(request),
+        limitOffsetSql: service.createLimitOffsetSql(request),
+      };
+      const results = await query(parts);
       const rows = service.cutResultsToPageSize(request, results);
-      const lastRow = service.getRowCount(request, results);
+      const lastRow = service.getLastRow(request, results);
 
       return { rows, lastRow };
     },
 
-    buildSql: (request: AgGridQuery) => {
-      const sql = [
-        ' select *',
-        ` FROM ${tableName} `,
-        service.createWhereSql(request),
-        service.createOrderBySql(request),
-        service.createLimitOffsetSql(request),
-      ].join('');
-
-      console.log(sql, '\r\n\n\n');
-      return sql;
-    },
-
     createWhereSql: ({ filterModel }: Pick<AgGridQuery, 'filterModel'>) => {
-      const simpleFilterModel = (filterModel ?? null) as FilterModel | null;
-      const filterEntries = Object.entries((simpleFilterModel ?? {}) as Record<string, SupportedFilterModel>);
-      const filterParts = filterEntries.map(([key, item]) => filter(key, item));
-
+      const filterParts = Object.entries((filterModel ?? {}) as Record<string, SupportedFilterModel>).map(
+        ([key, item]) => filter(key, item),
+      );
       return filterParts.length ? ` where ${filterParts.join(' and ')}` : '';
     },
 
     createOrderBySql: ({ sortModel }: Pick<AgGridQuery, 'sortModel'>) => {
-      if (!sortModel) return '';
-
-      const sortParts = sortModel.map(item => `${item.colId} ${item.sort}`);
-
-      return sortParts.length ? ` order by ${sortParts.join(', ')}` : '';
+      if (!sortModel?.length) return '';
+      return ` order by ${sortModel.map(item => `${item.colId} ${item.sort}`).join(', ')}`;
     },
 
     createLimitOffsetSql: ({ startRow, endRow }: Pick<AgGridQuery, 'startRow' | 'endRow'>) =>
       endRow !== undefined && startRow !== undefined ? ` limit ${endRow - startRow + 1} offset ${startRow}` : '',
 
-    getRowCount: ({ startRow, endRow }: Pick<AgGridQuery, 'startRow' | 'endRow'>, results: unknown[]) => {
-      if (!results?.length) return undefined;
-
+    getLastRow: ({ startRow, endRow }: Pick<AgGridQuery, 'startRow' | 'endRow'>, results: unknown[]) => {
+      if (!results?.length) return startRow;
       if (startRow === undefined || endRow === undefined) return results.length;
 
       const currentLastRow = startRow + results.length;

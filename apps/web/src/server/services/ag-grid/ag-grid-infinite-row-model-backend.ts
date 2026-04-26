@@ -153,12 +153,14 @@ const datePresetFilters = {
     dateRangeSql(key, "CURRENT_DATE - INTERVAL '24 month'", "CURRENT_DATE + INTERVAL '1 day'"),
 };
 
-const postgresService = createSqlService({
-  query: async (query: string) => {
-    const result = await db.execute(sql.raw(query));
+const sensorReadingsAgGrid = createSqlService({
+  query: async ({ whereSql, orderBySql, limitOffsetSql }) => {
+    const sqlQuery = `select * FROM sensor_readings ${whereSql} ${orderBySql} ${limitOffsetSql}`;
+    console.log('sqlQuery :', sqlQuery);
+
+    const result = await db.execute(sql.raw(sqlQuery));
     return result.rows as unknown[];
   },
-  tableName: 'sensor_readings',
   textFilters,
   numberFilters,
   bigintFilters,
@@ -166,4 +168,31 @@ const postgresService = createSqlService({
   datePresetFilters,
 });
 
-export default postgresService;
+export default sensorReadingsAgGrid;
+export const notificationsAgGrid = createSqlService({
+  query: async ({ whereSql, orderBySql, limitOffsetSql }) => {
+    const baseWhere = ' where archived_at is null';
+    const fullWhere = whereSql ? `${baseWhere} and (${whereSql.replace(/^\s*where\s+/i, '')})` : baseWhere;
+    const res = await db.execute(sql.raw(`select * FROM notifications${fullWhere}${orderBySql}${limitOffsetSql}`));
+    return res.rows as unknown[];
+  },
+  textFilters,
+  numberFilters,
+  bigintFilters,
+  dateFilters,
+  datePresetFilters
+});
+
+export const archivedNotificationsAgGrid = createSqlService({
+  query: async ({ whereSql, orderBySql, limitOffsetSql }) => {
+    const baseWhere = ' where archived_at is not null';
+    const fullWhere = whereSql ? `${baseWhere} and (${whereSql.replace(/^\s*where\s+/i, '')})` : baseWhere;
+    const res = await db.execute(sql.raw(`select * FROM notifications${fullWhere}${orderBySql}${limitOffsetSql}`));
+    return res.rows as unknown[];
+  },
+  textFilters,
+  numberFilters,
+  bigintFilters,
+  dateFilters,
+  datePresetFilters
+});

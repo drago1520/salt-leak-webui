@@ -11,7 +11,7 @@ import { trpc } from '@/lib/trpc-client';
     300197074698248193n
     300197326356492290n
  */
-export default function Grid({ rows }: { rows: SelectSensorReading[] | undefined }) {
+export default function Grid() {
   // prettier-ignore
   const rowData: SelectSensorReading[] = [
     { id: 300196823040004096n, receivedAt: '2026-04-08 09:15:00', rawLine: 'dc=3 machine=14 box=1 boost=47.8 p=[8.4,11.2,9.7,15.6,6.3,18.9]', p1Ohms: 8.4, p2Ohms: 11.2, p3Ohms: 9.7, p4Ohms: 15.6, p5Ohms: 6.3, p6Ohms: 18.9, p1StatusCode: 1, p2StatusCode: 0, p3StatusCode: 1, p4StatusCode: 0, p5StatusCode: 1, p6StatusCode: 0, boostVoltageV: 47.8, boxStatusCode: 1n, datacenterId: 3, machineId: 14 },
@@ -52,7 +52,7 @@ export default function Grid({ rows }: { rows: SelectSensorReading[] | undefined
       <AgGridProvider modules={[AllCommunityModule]}>
         <div className="h-150 w-full">
           <AgGridReact
-            //@ts-ignore-error too many overloads I guess
+            //@ts-expect-error too many overloads I guess
             columnDefs={colDefs}
             // rowData={rows}
             theme={agGridTheme}
@@ -63,7 +63,12 @@ export default function Grid({ rows }: { rows: SelectSensorReading[] | undefined
             datasource={{
               async getRows({ startRow, endRow, sortModel, filterModel, successCallback, failCallback }) {
                 try {
-                  const { rows, lastRow } = await trpc.agGridQuery.query({ startRow, endRow, sortModel, filterModel });
+                  const { rows, lastRow } = await trpc.agGridSensorReadingsQuery.query({
+                    startRow,
+                    endRow,
+                    sortModel,
+                    filterModel,
+                  });
                   successCallback(rows, lastRow);
                 } catch (error) {
                   failCallback();
