@@ -1,15 +1,29 @@
 # notifications
 
-To install dependencies:
+Listens to MQTT `readings` topic. On sensor error (any `pNStatusCode !== 0`) → sends web push + email to all users.
 
-```bash
-bun install
+## Rate limiting
+
+Both channels rate-limit per sensor ID to prevent spam. Cooldowns are in-memory — reset on restart.
+
+<details>
+<summary>Web push</summary>
+
+Default: 30s cooldown per sensor.
+
+```env
+COOLDOWN_MS=30000
 ```
 
-To run:
+</details>
 
-```bash
-bun run index.ts
+<details>
+<summary>Email</summary>
+
+Default: 1h cooldown per sensor.
+
+```env
+EMAIL_COOLDOWN_MS=3600000
 ```
 
-This project was created using `bun init` in bun v1.3.12. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+</details>
