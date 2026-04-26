@@ -15,6 +15,7 @@
     "@pushforge/builder": "^2.0.5",
     "@repo/db": "workspace:*",
     "@repo/ts-config": "workspace:*",
+    "@sentry/nextjs": "^10.50.0",
     "@trpc/client": "^11.16.0",
     "@trpc/server": "^11.16.0",
     "aedes": "^1.0.2",

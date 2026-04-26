@@ -1,6 +1,7 @@
+import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+let nextConfig: NextConfig = {
   output: 'standalone',
   reactCompiler: true,
   experimental: {
@@ -46,5 +47,19 @@ const nextConfig: NextConfig = {
     ]
   },
 };
+
+if (process.env.BUGSINK_SOURCEMAPS === "true") {
+  nextConfig = withSentryConfig(nextConfig, {
+    org: "bugsinkhasnoorgs",
+    project: "ignoredfornow",
+    sentryUrl: process.env.BUGSINK_URL,
+    authToken: process.env.BUGSINK_AUTH_TOKEN,
+    silent: process.env.BUGSINK_SOURCEMAPS_SILENT === "true",
+    reactComponentAnnotation: {
+      enabled: true,
+    },
+    tunnelRoute: "/error-monitor", //doesn't work; ublock origin lite still blocks bugsink
+  });
+}
 
 export default nextConfig;

@@ -11,13 +11,14 @@
     "typescript": "^5"
   },
   "scripts": {
-    "start": "bun index.ts",
-    "dev": "bun --watch index.ts"
+    "start": "bun --preload ./instrument.ts index.ts",
+    "dev": "bun --watch --preload ./instrument.ts index.ts"
   },
   "dependencies": {
     "@pushforge/builder": "^2.0.5",
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
+    "@sentry/bun": "^10.50.0",
     "@types/node": "^25.6.0",
     "drizzle-orm": "^0.45.2",
     "mqtt": "^5.15.1",
