@@ -2,13 +2,14 @@
 import { AgCharts } from 'ag-charts-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useWebSocket } from '@/hooks/use-websocket';
 import { AgCartesianChartOptions, AllCommunityModule, ModuleRegistry } from 'ag-charts-community';
 import { SensorReadingEvent } from '@repo/shared/sensor-events-SSE.ts';
 import { type SensorChannel, toMqttTopic } from '@repo/shared/sensor-channel.ts';
+import { ExternalLink } from 'lucide-react';
 
 const config = {
   active: { label: 'Active', dot: 'bg-success' },
@@ -135,21 +136,21 @@ function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
   const pins = event?.pins ?? [];
   if (!pins.length)
     return (
-      <Popover>
-        <PopoverTrigger className="text-muted-foreground cursor-pointer text-xs underline underline-offset-2">
+      <Tooltip>
+        <TooltipTrigger className="text-muted-foreground cursor-pointer text-xs underline underline-offset-2">
           INSTALL SENSOR
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-3 text-xs">
+        </TooltipTrigger>
+        <TooltipContent>
           <Link
             href="https://github.com/drago1520/salt-leak-webui/tree/master/apps/salt-leak-sensor"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
+            className="hover:underline flex items-center gap-1"
           >
-            View sensor setup →
+            View sensor setup <ExternalLink className='size-3' />
           </Link>
-        </PopoverContent>
-      </Popover>
+        </TooltipContent>
+      </Tooltip>
     );
   return <PinBarsChart pins={pins} />;
 }
