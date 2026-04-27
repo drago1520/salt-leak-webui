@@ -17,7 +17,9 @@ RUN --mount=type=cache,target=/root/.bun/install/cache bun install
 FROM installer AS runner
 COPY --from=pruner /app/out/full/ .
 ENV NODE_ENV=production
+ARG WS_PORT=4001
+ENV WS_PORT=${WS_PORT}
 
-EXPOSE 4001
+EXPOSE ${WS_PORT}
 WORKDIR /app/apps/notifications
 CMD ["bun", "--preload", "./instrument.ts", "index.ts"]
