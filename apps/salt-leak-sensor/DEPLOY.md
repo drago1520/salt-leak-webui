@@ -1,0 +1,2 @@
+Short: Just use node locally. 
+Long: I didn't manage to have bun pm + node runtime on Docker. Neither npm, neither bun (runtime) work. It doesn't matter - the raspberries will not run docker either way

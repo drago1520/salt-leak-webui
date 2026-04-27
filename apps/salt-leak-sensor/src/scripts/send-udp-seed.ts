@@ -1,29 +1,21 @@
-import { createConnection } from "node:net";
+import { createSocket } from "node:dgram";
 import {
   FAIL_CHANCE,
   SERIAL_DELIMITER,
-  TCP_HOST,
-  TCP_PORT,
-  TCP_SEND_Hz,
+  UDP_HOST,
+  UDP_PORT,
+  SEND_Hz,
 } from "../utils/env-schema.ts";
 import {
   presets,
   simulateSensorOutput,
 } from "../utils/simulate-sensor-output.ts";
 
-const socket = createConnection({
-  host: TCP_HOST,
-  port: TCP_PORT,
-});
+const socket = createSocket("udp4");
 
-await new Promise<void>((resolve, reject) => {
-  socket.once("connect", resolve);
-  socket.once("error", reject);
-});
+console.log(`Sending to UDP ${UDP_HOST}:${UDP_PORT}`);
 
-console.log(`Connected to ${TCP_HOST}:${TCP_PORT}`);
-
-const intervalMs = Math.max(1, Math.round(1000 / TCP_SEND_Hz)); //0-2; 3-15
+const intervalMs = Math.max(1, Math.round(1000 / SEND_Hz));
 
 setInterval(() => {
   const presetIndex =
@@ -33,6 +25,9 @@ setInterval(() => {
 
   const sensorOutput = simulateSensorOutput(presets[presetIndex]);
   const msg = `${sensorOutput}${SERIAL_DELIMITER}`;
-  socket.write(msg);
-  console.log("Wrote message :", msg);
+  const buf = Buffer.from(msg);
+  socket.send(buf, UDP_PORT, UDP_HOST, err => {
+    if (err) console.error("UDP send error:", err);
+    else console.log("Sent message:", msg);
+  });
 }, intervalMs);

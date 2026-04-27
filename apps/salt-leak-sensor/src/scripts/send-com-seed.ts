@@ -1,6 +1,14 @@
 import { SerialPort } from "serialport";
-import { FAIL_CHANCE, SERIAL_DELIMITER, SERIAL_PORT_SENDER, TCP_SEND_Hz } from "../utils/env-schema.ts";
-import { presets, simulateSensorOutput } from "../utils/simulate-sensor-output.ts";
+import {
+  FAIL_CHANCE,
+  SERIAL_DELIMITER,
+  SERIAL_PORT_SENDER,
+  SEND_Hz,
+} from "../utils/env-schema.ts";
+import {
+  presets,
+  simulateSensorOutput,
+} from "../utils/simulate-sensor-output.ts";
 
 const port = new SerialPort({
   path: SERIAL_PORT_SENDER,
@@ -12,7 +20,7 @@ const port = new SerialPort({
 });
 
 await new Promise<void>((resolve, reject) => {
-  port.open(error => {
+  port.open((error) => {
     if (error) {
       reject(error);
       return;
@@ -24,17 +32,18 @@ await new Promise<void>((resolve, reject) => {
 
 console.log(`Opened ${SERIAL_PORT_SENDER}`);
 
-const intervalMs = Math.max(1, Math.round(1000 / TCP_SEND_Hz));
+const intervalMs = Math.max(1, Math.round(1000 / SEND_Hz));
 
 setInterval(() => {
-  const presetIndex = Math.random() < (FAIL_CHANCE / 100)
-    ? Math.trunc(Math.random() * (16 - 3) + 3)
-    : Math.trunc(Math.random() * 3);
+  const presetIndex =
+    Math.random() < FAIL_CHANCE / 100
+      ? Math.trunc(Math.random() * (16 - 3) + 3)
+      : Math.trunc(Math.random() * 3);
 
   const sensorOutput = simulateSensorOutput(presets[presetIndex]);
   const payload = `${sensorOutput}${SERIAL_DELIMITER}`;
 
-  port.write(payload, error => {
+  port.write(payload, (error) => {
     if (error) {
       console.error("Serial write failed:", error);
       return;

@@ -2,11 +2,16 @@ import "dotenv/config";
 import { z } from "zod";
 
 export const envSchema = z.object({
-  BROKER_URL: z.string().min(1, 'BROKER_URL is missing. The sensor has nowhere to send data. Use mqtt://host:1883'),
-  MQTT_USERNAME: z.string().min(1, 'MQTT_USERNAME is missing.'),
-  MQTT_PASSWORD: z.string().min(1, 'MQTT_PASSWORD is missing.'),
-  COMPANY_ID: z.string().min(1, 'COMPANY_ID is missing.'),
-  LOCATION_ID: z.string().min(1, 'LOCATION_ID is missing.'),
+  BROKER_URL: z
+    .string()
+    .min(
+      1,
+      "BROKER_URL is missing. The sensor has nowhere to send data. Use mqtt://host:1883",
+    ),
+  MQTT_USERNAME: z.string().min(1, "MQTT_USERNAME is missing."),
+  MQTT_PASSWORD: z.string().min(1, "MQTT_PASSWORD is missing."),
+  COMPANY_ID: z.string().min(1, "COMPANY_ID is missing."),
+  LOCATION_ID: z.string().min(1, "LOCATION_ID is missing."),
   DATACENTER_ID: z.coerce
     .number()
     .refine(
@@ -41,8 +46,8 @@ export const envSchema = z.object({
       (value) => value === "true" || value === "false",
       "IS_REAL_DEVICE must be true or false.",
     ),
-  TCP_HOST: z.coerce.string().nonempty("TCP_HOST is missing from .env"),
-  TCP_PORT: z.coerce
+  UDP_HOST: z.coerce.string().nonempty("UDP_HOST is missing from .env"),
+  UDP_PORT: z.coerce
     .number()
     .refine(
       (value) =>
@@ -50,19 +55,19 @@ export const envSchema = z.object({
         Number.isInteger(value) &&
         value > 0 &&
         value <= 65535,
-      "TCP_PORT must be an integer between 1 and 65535.",
+      "UDP_PORT must be an integer between 1 and 65535.",
     ),
-  TCP_SEND_Hz: z.coerce
+  SEND_Hz: z.coerce
     .number()
     .refine(
       (value) => !Number.isNaN(value) && Number.isFinite(value) && value > 0,
-      "TCP_SEND_Hz must be > 0.",
+      "SEND_Hz must be > 0.",
     ),
-    FAIL_CHANCE: z.coerce.number().int().nonnegative().default(0)
+  FAIL_CHANCE: z.coerce.number().int().nonnegative().default(0),
 });
 
 export const ENV = envSchema.safeParse(process.env).data;
-if(!ENV) throw new Error('env broken')
+if (!ENV) throw new Error("env broken");
 
 export const {
   BROKER_URL,
@@ -76,8 +81,8 @@ export const {
   SERIAL_PORT_SENDER,
   SERIAL_DELIMITER,
   IS_REAL_DEVICE,
-  TCP_HOST,
-  TCP_PORT,
-  TCP_SEND_Hz,
-  FAIL_CHANCE
+  UDP_HOST,
+  UDP_PORT,
+  SEND_Hz,
+  FAIL_CHANCE,
 } = ENV;

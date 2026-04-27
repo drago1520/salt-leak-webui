@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "listen": "node src/index.ts",
-    "send": "node src/scripts/send-tcp-seed.ts",
+    "send": "node src/scripts/send-udp-seed.ts",
     "send:com": "node src/scripts/send-com-seed.ts",
     "csv:gen": "node src/scripts/generate-sensor-csv.ts",
     "csv:import": "node src/scripts/import-sensor-csv.ts"
