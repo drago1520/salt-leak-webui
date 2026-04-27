@@ -19,4 +19,4 @@ This project was created using `bun init` in bun v1.3.12. [Bun](https://bun.com)
 ## Auth
 
 - **MQTT**: Aedes checks `MQTT_USERNAME` / `MQTT_PASSWORD` on every client connect. Sensors must supply matching credentials.
-- **WebSocket**: Clients must pass `?key=<WS_SECRET>` in the URL. Requests without it get `401`. The web app reads this from `NEXT_PUBLIC_WS_SECRET`.
+- **WebSocket**: Clients must pass `?key=<WS_SECRET>` in the URL. Requests without it get `401`. The web app reads this from `NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_SECRET`.

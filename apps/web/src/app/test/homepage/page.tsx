@@ -130,7 +130,7 @@ function PinBarsChart({ pins }: { pins: Pins }) {
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
   const event = useWebSocket<SensorReadingEvent>(
-    `ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_WS_SECRET}`,
+    `ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_SECRET}`,
   );
   const pins = event?.pins ?? [];
   if (!pins.length)
