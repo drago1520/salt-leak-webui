@@ -71,7 +71,12 @@ function buildHtml(sensorId: string, readingId: bigint, timestamp: string) {
 </html>`;
 }
 
-export async function notifyEmail(sensorId: string, readingId: bigint, message: string) {
+export async function notifyEmail(
+  sensorId: string,
+  readingId: bigint,
+  message: string,
+) {
+  if (process.env.ENABLE_EMAIL_NOTIFY == "false") return;
   const now = Date.now();
   if (now - (lastEmailAt.get(sensorId) ?? 0) < EMAIL_COOLDOWN_MS) return;
   lastEmailAt.set(sensorId, now);
@@ -82,7 +87,12 @@ export async function notifyEmail(sensorId: string, readingId: bigint, message: 
     return;
   }
 
-  const timestamp = new Date().toLocaleString("en-GB", { timeZone: "UTC", dateStyle: "long", timeStyle: "short" }) + " UTC";
+  const timestamp =
+    new Date().toLocaleString("en-GB", {
+      timeZone: "UTC",
+      dateStyle: "long",
+      timeStyle: "short",
+    }) + " UTC";
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM!,
