@@ -35,10 +35,10 @@ function ArchiveCell({ data, api }: ICellRendererParams) {
 
 export function NotificationSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const inboxRef = useRef<AgGridReact>(null);
-  usePushSubscribe()
+  usePushSubscribe();
   useEffect(() => {
     const ws = new WebSocket(
-      `${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL}?token=${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_TOKEN}`,
+      `${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL}?token=${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_KEY}`,
     );
     ws.onmessage = e => {
       const data = JSON.parse(e.data);
@@ -66,7 +66,7 @@ export function NotificationSheet({ open, onOpenChange }: { open: boolean; onOpe
             <Bell /> Notifications
           </SheetTitle>
         </SheetHeader>
-        <Tabs defaultValue="inbox" className="flex flex-1 flex-col" >
+        <Tabs defaultValue="inbox" className="flex flex-1 flex-col">
           <TabsList variant="line">
             <TabsTrigger value="inbox">Inbox</TabsTrigger>
             <TabsTrigger value="archived">Archived</TabsTrigger>
@@ -116,7 +116,12 @@ export function NotificationSheet({ open, onOpenChange }: { open: boolean; onOpe
                   datasource={{
                     async getRows({ startRow, endRow, sortModel, filterModel, successCallback, failCallback }) {
                       try {
-                        const { rows, lastRow } = await trpc.notifications.listArchived.query({ startRow, endRow, sortModel: [{ colId: 'id', sort: 'desc' }, ...sortModel], filterModel });
+                        const { rows, lastRow } = await trpc.notifications.listArchived.query({
+                          startRow,
+                          endRow,
+                          sortModel: [{ colId: 'id', sort: 'desc' }, ...sortModel],
+                          filterModel,
+                        });
                         successCallback(rows, lastRow);
                       } catch {
                         failCallback();
