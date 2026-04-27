@@ -42,7 +42,7 @@ const sensors: Record<
       unit: ' kΩ',
       sparkline: [],
       channel: {
-        host: 'localhost:4000',
+        host: process.env.NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_URL!,
         companyId: 'CA',
         locationId: 'room-a',
         sensorType: 'salt-leak',
