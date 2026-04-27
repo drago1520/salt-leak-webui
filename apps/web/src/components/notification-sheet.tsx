@@ -38,7 +38,7 @@ export function NotificationSheet({ open, onOpenChange }: { open: boolean; onOpe
   usePushSubscribe();
   useEffect(() => {
     const ws = new WebSocket(
-      `${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL}?token=${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_KEY}`,
+      `${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL}?key=${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_KEY}`,
     );
     ws.onmessage = e => {
       const data = JSON.parse(e.data);
