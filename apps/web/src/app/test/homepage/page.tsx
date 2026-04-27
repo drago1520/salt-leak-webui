@@ -46,7 +46,7 @@ const sensors: Record<
         companyId: 'CA',
         locationId: 'room-a',
         sensorType: 'salt-leak',
-        datacenterId: 1,
+        datacenterId: 0,
         machineId: 0,
       },
     },
@@ -130,7 +130,7 @@ function PinBarsChart({ pins }: { pins: Pins }) {
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
   const event = useWebSocket<SensorReadingEvent>(
-    `ws://${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_SECRET}`,
+    `${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_SECRET}`,
   );
   const pins = event?.pins ?? [];
   if (!pins.length)
