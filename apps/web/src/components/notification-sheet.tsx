@@ -40,6 +40,9 @@ export function NotificationSheet({ open, onOpenChange }: { open: boolean; onOpe
     const ws = new WebSocket(
       `${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_URL}?key=${process.env.NEXT_PUBLIC_NOTIFICATIONS_WS_KEY}`,
     );
+    ws.onopen = () => console.log('[notifications-ws] open', ws.url);
+    ws.onclose = e => console.log('[notifications-ws] close', { code: e.code, reason: e.reason, wasClean: e.wasClean });
+    ws.onerror = () => console.error('[notifications-ws] error');
     ws.onmessage = e => {
       const data = JSON.parse(e.data);
       toast.error(data.message);

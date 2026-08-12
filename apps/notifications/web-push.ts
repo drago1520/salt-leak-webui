@@ -22,6 +22,10 @@ export const wsServer = Bun.serve({
   websocket: {
     open(ws) {
       ws.subscribe("alerts");
+      console.log("WS connected: alerts", ws.remoteAddress);
+    },
+    close(ws, code, reason) {
+      console.log("WS disconnected", { code, reason });
     },
     message() {},
   },
