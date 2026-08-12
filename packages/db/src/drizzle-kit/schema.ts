@@ -27,7 +27,7 @@ export const sensorReadings = pgTable("sensor_readings", {
 	machineId: integer("machine_id").notNull(),
 }, (table) => [ //IMPORTANT: after every push, do pull. Index order matters 
 	index("sensor_readings_box_status_alert_idx").using("btree", table.boxStatusCode.asc().nullsLast().op("int8_ops")).where(sql`(box_status_code <> 0)`),
-	index("sensor_readings_datacenter_id_id_idx").using("btree", table.datacenterId.asc().nullsLast().op("int8_ops"), table.id.asc().nullsLast().op("int4_ops")),
+	index("sensor_readings_datacenter_id_id_idx").using("btree", table.datacenterId.asc().nullsLast().op("int4_ops"), table.id.asc().nullsLast().op("int8_ops")), //WARNING: drizzle-kit writes wrong column types. table.datacenterId must be int4_ops and table.id == int8_ops. Fixed in beta drizzle-kit.  
 	index("sensor_readings_machine_id_id_idx").using("btree", table.machineId.asc().nullsLast().op("int4_ops"), table.id.asc().nullsLast().op("int8_ops")),
 	index("sensor_readings_p1_low_ohms_idx").using("btree", table.p1Ohms.asc().nullsLast().op("float8_ops")).where(sql`(p1_ohms < (10)::double precision)`),
 	index("sensor_readings_p1_status_alert_idx").using("btree", table.p1StatusCode.asc().nullsLast().op("int4_ops")).where(sql`(p1_status_code <> 0)`),
@@ -51,10 +51,10 @@ export const notifications = pgTable("notifications", {
 	archivedAt: timestamp("archived_at", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
-			columns: [table.id],
-			foreignColumns: [sensorReadings.id],
-			name: "notifications_id_sensor_readings_id_fk"
-		}),
+		columns: [table.id],
+		foreignColumns: [sensorReadings.id],
+		name: "notifications_id_sensor_readings_id_fk"
+	}),
 ]);
 
 export const webPushSubscriptions = pgTable("web_push_subscriptions", {
@@ -66,10 +66,10 @@ export const webPushSubscriptions = pgTable("web_push_subscriptions", {
 	expirationTime: text("expiration_time"),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "push_subscriptions_user_id_user_id_fk"
-		}).onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [user.id],
+		name: "push_subscriptions_user_id_user_id_fk"
+	}).onDelete("cascade"),
 	unique("web_push_subscriptions_endpoint_unique").on(table.endpoint),
 ]);
 
@@ -97,10 +97,10 @@ export const session = pgTable("session", {
 }, (table) => [
 	index("session_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "session_user_id_user_id_fk"
-		}).onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [user.id],
+		name: "session_user_id_user_id_fk"
+	}).onDelete("cascade"),
 	unique("session_token_unique").on(table.token),
 ]);
 
@@ -121,10 +121,10 @@ export const account = pgTable("account", {
 }, (table) => [
 	index("account_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "account_user_id_user_id_fk"
-		}).onDelete("cascade"),
+		columns: [table.userId],
+		foreignColumns: [user.id],
+		name: "account_user_id_user_id_fk"
+	}).onDelete("cascade"),
 ]);
 
 export const verification = pgTable("verification", {
