@@ -15,8 +15,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'form'>)
   const f = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'demo@drago.com',
-      password: 'definitely a secure password',
+      email: 'thomas.steenberg@copenhagen-atomics.com',
+      password: 'securepassword123',
     },
   });
 
