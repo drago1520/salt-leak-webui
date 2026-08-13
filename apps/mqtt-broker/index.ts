@@ -33,13 +33,17 @@ broker.authenticate = (_client, username, password, done) => {
   done(null, ok);
 };
 
+/** Tech debt
+ * TODO: implement at-least-once retry for critical events. For most events we'll have at-most-once. However, if they meet certain conditions (like failed sensor1) => at-least-once with timestamp + sensorID == idempotency key. P.S. it's dangerous to have timestamp in idempotency because of client clock drift. I don't believe clock drift will be an issue at all, it's 10 per second, like cmon + sensorID. If fail, send to -> DLQ
+ * TODO: Implement Dead letter queue for human inspection.
+ */
 const wsServer = Bun.serve<{ channel: string }>({
   port: env.WS_PORT,
   fetch(req, server) {
     const url = new URL(req.url);
     if (url.pathname === "/health") return new Response("ok");
     if (url.pathname === "/health/deep") return deepHealth();
-    if (url.searchParams.get("key") !== env.WS_SECRET)
+    if (url.searchParams.get("key") !== env.WS_SECRET) //Tech debt: token leaks trough url params in reverse proxy logs. Find better ways later on.
       return new Response("unauthorized", { status: 401 });
     const channel = url.searchParams.get("channel") ?? "#";
     if (server.upgrade(req, { data: { channel } })) return;

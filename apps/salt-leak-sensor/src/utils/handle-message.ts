@@ -31,6 +31,8 @@ client.on("connect", () => console.log("MQTT connected"));
 client.on("reconnect", () => console.log("MQTT reconnecting..."));
 client.on("error", (error) => console.error("MQTT error:", error.message));
 
+/** TODO: It's best practice to compress payload. Cheap for CPU. zstd/ brotli etc. */
+/** Tech debt: add sampling of non-error recordings. */
 export async function handleMessage(rawLine: string) {
   client.publish(toMqttTopic(channel), rawLine);
 }

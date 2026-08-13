@@ -9,7 +9,7 @@ const Server = Bun.serve({
     const { searchParams, pathname } = new URL(req.url);
     if (pathname === "/health") return new Response("ok");
     if (pathname === "/health/deep") return deepHealth();
-    if (searchParams.get("key") !== process.env.WS_KEY) //Tech debt: must be at least Bearer token in headers
+    if (searchParams.get("key") !== process.env.WS_KEY) //Tech debt: token leaks trough url params in reverse proxy logs. Find better ways later on.
       return new Response("unauthorized", { status: 401 });
     if (server.upgrade(req)) return;
     return new Response("not found", { status: 404 });
@@ -45,7 +45,7 @@ client.on("message", async (_topic, payload) => {
     data.p4StatusCode,
     data.p5StatusCode,
     data.p6StatusCode,
-  ].some((v: number) => v !== 0);
+  ].some((v: number) => v !== 0);//Tech debt: add the device code hex errors too.
   if (!hasError) return;
 
   const message = `Sensor ${sensorId} leaking on reading ${id}`;

@@ -131,7 +131,7 @@ function PinBarsChart({ pins }: { pins: Pins }) {
 
 function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
   const event = useWebSocket<SensorReadingEvent>(
-    `${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_SECRET}`,
+    `${host}?channel=${toMqttTopic(channel)}&key=${process.env.NEXT_PUBLIC_SENSOR_BAR_CHARTS_WS_SECRET}`, //Tech debt: token leaks trough url params in reverse proxy logs. Find better ways later on.
   );
   const pins = event?.pins ?? [];
   if (!pins.length)
