@@ -27,7 +27,7 @@ export async function notifyWebDashboard(
   );
 
   const subs = await db.select().from(webPushSubscriptions);
-  await Promise.all(
+  await Promise.allSettled(
     subs.map(async ({ endpoint, p256Dh, auth }) => {
       const req = await buildPushHTTPRequest({
         privateJWK: VAPID_PRIVATE_KEY,

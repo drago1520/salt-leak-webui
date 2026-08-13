@@ -49,7 +49,8 @@ client.on("message", async (_topic, payload) => {
   if (!hasError) return;
 
   const message = `Sensor ${sensorId} leaking on reading ${id}`;
-  await Promise.all([notifyWebDashboard(sensorId, id, message, Server), notifyEmail(sensorId, id, message)]);
+  //Tech debt: add error handling
+  await Promise.allSettled([notifyWebDashboard(sensorId, id, message, Server), notifyEmail(sensorId, id, message)]);
 });
 
 client.on("connect", () => console.log("MQTT connected"));
