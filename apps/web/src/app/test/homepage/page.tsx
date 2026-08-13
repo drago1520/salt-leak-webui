@@ -145,9 +145,9 @@ function RealTimePinBars({ host, ...channel }: RealTimePinBarsProps) {
             href="https://github.com/drago1520/salt-leak-webui/tree/master/apps/salt-leak-sensor"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline flex items-center gap-1"
+            className="flex items-center gap-1 hover:underline"
           >
-            View sensor setup <ExternalLink className='size-3' />
+            View sensor setup <ExternalLink className="size-3" />
           </Link>
         </TooltipContent>
       </Tooltip>
