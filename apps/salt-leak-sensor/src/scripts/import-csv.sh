@@ -1,1 +1,0 @@
-set -a && source .env && set +a && psql "$DB_URL" -c "\copy sensor_readings2 from 'sensor-output-500000.csv' with (format csv, header true)"
