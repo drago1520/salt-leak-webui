@@ -36,6 +36,7 @@ const wsServer = Bun.serve<{ channel: string }>({
   port: env.WS_PORT,
   fetch(req, server) {
     const url = new URL(req.url);
+    if (url.pathname === "/health") return new Response("ok");
     if (url.searchParams.get("key") !== env.WS_SECRET)
       return new Response("unauthorized", { status: 401 });
     const channel = url.searchParams.get("channel") ?? "#";
@@ -51,7 +52,7 @@ const wsServer = Bun.serve<{ channel: string }>({
       ws.unsubscribe(ws.data.channel);
       console.log("WS disconnected:", ws.data.channel);
     },
-    message() {},
+    message() { },
   },
 });
 
@@ -106,7 +107,7 @@ broker.on(
         .insert(sensorReadings)
         .values({ id, datacenterId, machineId, ...reading, boxStatusCode: BigInt(reading.boxStatusCode) });
 
-      broker.publish({ ...packet, topic: 'readings', payload: Buffer.from(JSON.stringify({ id: id.toString(), datacenterId, machineId, ...reading })) }, () => {});
+      broker.publish({ ...packet, topic: 'readings', payload: Buffer.from(JSON.stringify({ id: id.toString(), datacenterId, machineId, ...reading })) }, () => { });
     } catch (error) {
       console.error(
         "publish failed:",

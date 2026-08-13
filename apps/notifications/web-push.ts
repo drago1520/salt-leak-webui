@@ -10,31 +10,11 @@ const VAPID_PRIVATE_KEY = JSON.parse(process.env.VAPID_PRIVATE_KEY!);
 const COOLDOWN_MS = Number(process.env.COOLDOWN_MS ?? 30_000);
 const lastAlertAt = new Map<string, number>();
 
-export const wsServer = Bun.serve({
-  port: Number(process.env.WS_PORT ?? 4001),
-  fetch(req, server) {
-    const { searchParams } = new URL(req.url);
-    if (searchParams.get("key") !== process.env.WS_KEY)
-      return new Response("unauthorized", { status: 401 });
-    if (server.upgrade(req)) return;
-    return new Response("not found", { status: 404 });
-  },
-  websocket: {
-    open(ws) {
-      ws.subscribe("alerts");
-      console.log("WS connected: alerts", ws.remoteAddress);
-    },
-    close(ws, code, reason) {
-      console.log("WS disconnected", { code, reason });
-    },
-    message() {},
-  },
-});
-
-export async function notifyWebPush(
+export async function notifyWebDashboard(
   sensorId: string,
   id: bigint,
   message: string,
+  wsServer: Bun.Server<undefined>
 ) {
   const now = Date.now();
   if (now - (lastAlertAt.get(sensorId) ?? 0) < COOLDOWN_MS) return;

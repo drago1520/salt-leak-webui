@@ -1,6 +1,28 @@
 import { connect } from "mqtt";
 import { notifyEmail } from "./email";
-import { notifyWebPush } from "./web-push";
+import { notifyWebDashboard } from "./web-push";
+
+const Server = Bun.serve({
+  port: Number(process.env.WS_PORT ?? 4001),
+  fetch(req, server) {
+    const { searchParams, pathname } = new URL(req.url);
+    if (pathname === "/health") return new Response("ok");
+    if (searchParams.get("key") !== process.env.WS_KEY) //Tech debt: must be at least Bearer token in headers
+      return new Response("unauthorized", { status: 401 });
+    if (server.upgrade(req)) return;
+    return new Response("not found", { status: 404 });
+  },
+  websocket: {
+    open(ws) {
+      ws.subscribe("alerts");
+      console.log("WS connected: alerts", ws.remoteAddress);
+    },
+    close(ws, code, reason) {
+      console.log("WS disconnected", { code, reason });
+    },
+    message() { },
+  },
+});
 
 const client = connect(process.env.BROKER_URL!, {
   username: process.env.MQTT_USERNAME,
@@ -25,7 +47,7 @@ client.on("message", async (_topic, payload) => {
   if (!hasError) return;
 
   const message = `Sensor ${sensorId} leaking on reading ${id}`;
-  await Promise.all([notifyWebPush(sensorId, id, message), notifyEmail(sensorId, id, message)]);
+  await Promise.all([notifyWebDashboard(sensorId, id, message, Server), notifyEmail(sensorId, id, message)]);
 });
 
 client.on("connect", () => console.log("MQTT connected"));
