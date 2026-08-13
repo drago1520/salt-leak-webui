@@ -14,11 +14,6 @@ import { Avatar, AvatarImage } from './ui/avatar';
 
 // This is sample data.
 const data = {
-  user: {
-    name: 'Thomas Jam',
-    email: 'thomas.jam@copenhagenatomics.com',
-    avatar: '/thomas_jam.jpeg',
-  },
   teams: [
     {
       name: 'Copenhagen Atomics',
@@ -133,7 +128,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <NavMain label="" items={data.footer} />
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
