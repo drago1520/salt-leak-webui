@@ -1,12 +1,14 @@
 import { connect } from "mqtt";
-import { notifyEmail } from "./email";
+import { notifyEmail, transporter } from "./email";
 import { notifyWebDashboard } from "./web-push";
+import { db } from "@repo/db";
 
 const Server = Bun.serve({
   port: Number(process.env.WS_PORT ?? 4001),
   fetch(req, server) {
     const { searchParams, pathname } = new URL(req.url);
     if (pathname === "/health") return new Response("ok");
+    if (pathname === "/health/deep") return deepHealth();
     if (searchParams.get("key") !== process.env.WS_KEY) //Tech debt: must be at least Bearer token in headers
       return new Response("unauthorized", { status: 401 });
     if (server.upgrade(req)) return;
@@ -52,3 +54,17 @@ client.on("message", async (_topic, payload) => {
 
 client.on("connect", () => console.log("MQTT connected"));
 client.on("error", (e) => console.error("MQTT error:", e.message));
+
+async function deepHealth() {
+  const [dbRes, smtpRes] = await Promise.allSettled([
+    db.$client.query("select 1"),
+    transporter.verify(),
+  ]);
+  const checks = {
+    db: dbRes.status === "fulfilled" ? "ok" : String(dbRes.reason),
+    smtp: smtpRes.status === "fulfilled" ? "ok" : String(smtpRes.reason),
+    mqtt: client.connected ? "ok" : "disconnected",
+  };
+  const ok = Object.values(checks).every((v) => v === "ok");
+  return Response.json({ status: ok ? "ok" : "degraded", checks }, { status: ok ? 200 : 503 });
+}

@@ -24,6 +24,7 @@ const env = z
   .parse(process.env);
 
 const broker = await Aedes.createBroker();
+let mqttListening = false; //singleton
 
 broker.authenticate = (_client, username, password, done) => {
   const ok =
@@ -37,6 +38,7 @@ const wsServer = Bun.serve<{ channel: string }>({
   fetch(req, server) {
     const url = new URL(req.url);
     if (url.pathname === "/health") return new Response("ok");
+    if (url.pathname === "/health/deep") return deepHealth();
     if (url.searchParams.get("key") !== env.WS_SECRET)
       return new Response("unauthorized", { status: 401 });
     const channel = url.searchParams.get("channel") ?? "#";
@@ -126,7 +128,18 @@ broker.on("clientDisconnect", (client: Client) =>
 broker.on("connectionError", (error) => console.error("broker error:", error));
 broker.on("clientError", (error) => console.error("broker error:", error));
 
-createServer(broker.handle).listen(env.MQTT_PORT, () =>
-  console.log(`MQTT on :${env.MQTT_PORT}`),
-);
+async function deepHealth() {
+  const [dbRes] = await Promise.allSettled([db.$client.query("select 1")]);
+  const checks = {
+    db: dbRes.status === "fulfilled" ? "ok" : String(dbRes.reason),
+    mqtt: mqttListening ? "ok" : "not listening",
+  };
+  const ok = Object.values(checks).every((v) => v === "ok");
+  return Response.json({ status: ok ? "ok" : "degraded", checks }, { status: ok ? 200 : 503 });
+}
+
+createServer(broker.handle).listen(env.MQTT_PORT, () => {
+  mqttListening = true;
+  console.log(`MQTT on :${env.MQTT_PORT}`);
+});
 console.log(`WS on :${env.WS_PORT}`);
